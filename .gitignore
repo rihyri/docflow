@@ -1,0 +1,22 @@
+# Spring Boot
+backend/target/
+*.log
+
+# Spring Boot secrets
+backend/src/main/resources/application.properties
+backend/src/main/resources/application-*.properties
+
+# Env
+.env
+.env*
+
+# IDE
+.idea/
+.vscode/
+*.eml
+
+# OS
+.DS_Store
+
+# Docker
+docker-compose.yml
