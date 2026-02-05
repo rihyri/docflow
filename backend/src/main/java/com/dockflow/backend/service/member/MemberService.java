@@ -1,4 +1,4 @@
-package com.dockflow.backend.service;
+package com.dockflow.backend.service.member;
 
 import com.dockflow.backend.dto.member.MemberJoinDTO;
 import com.dockflow.backend.entity.member.Member;
