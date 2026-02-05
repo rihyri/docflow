@@ -35,6 +35,9 @@ public class SecurityConfig {
                         .requestMatchers("/").permitAll()
                         .requestMatchers("/login").permitAll()
                         .requestMatchers("/join").permitAll()
+                        .requestMatchers("/api/member/check-id").permitAll()
+                        .requestMatchers("/api/member/check-email").permitAll()
+                        .requestMatchers("/css/**", "/js/**", "/images/**").permitAll()
                         .anyRequest().authenticated()
                 );
 

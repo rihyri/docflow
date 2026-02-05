@@ -6,6 +6,254 @@
 
     <div layout:fragment="content">
         <h1>회원가입창</h1>
+
+        <!-- 에러 메시지 -->
+        <div th:if="${error}" th:text="${error}"></div>
+
+        <!-- 성공 메시지 -->
+        <div th:if="${message}" th:text="${message}"></div>
+
+        <div class="join_form">
+            <form name="join_form" method="post" th:action="@{/join}" onsubmit="return validateForm()">
+                <div>
+                    <label>아이디</label>
+                    <input type="text" id="memberId" name="memberId" placeholder="아이디를 입력하세요."/>
+                    <button type="button" onclick="checkMemberId()">아이디 중복확인</button>
+                    <span id="idCheckMsg"></span>
+                </div>
+                <div>
+                    <label>비밀번호</label>
+                    <input type="password" name="memberPw" id="memberPw"  placeholder="비밀번호를 입력하세요."/>
+                </div>
+                <div>
+                    <label>비밀번호 확인</label>
+                    <input type="password" name="memberPwCheck" id="memberPwCheck" placeholder="비밀번호를 다시 한번 입력하세요." />
+                    <span id="pwCheckMsg"></span>
+                </div>
+                <div>
+                    <label>이름</label>
+                    <input type="memberName" id="memberName" name="memberName" placeholder="이름을 입력하세요."/>
+                </div>
+                <div>
+                    <label>이메일</label>
+                    <input type="text" id="email1" name="email1" placeholder="이메일을 입력하세요." />
+                    @
+                    <input type="text" id="email2" name="email2" placeholder="이메일 도메인을 입력하세요." />
+                    <select name="email_selected" id="emailSelected" onchange="handleEmailDomainChange()">
+                        <option value="hanmail.net">hanmail.net</option>
+                        <option value="naver.com">naver.com</option>
+                        <option value="daum.net">daum.net</option>
+                        <option value="nate.com">nate.com</option>
+                        <option value="gmail.com">gmail.com</option>
+                        <option value="korea.com">korea.com</option>
+                        <option value="dreamwiz.com">dreamwiz.com</option>
+                        <option value="hotmail.com">hotmail.com</option>
+                        <option value="yahoo.co.kr">yahoo.co.kr</option>
+                        <option value="sportal.or.kr">sportal.or.kr</option>
+                        <option value="" selected>직접입력</option>
+                    </select>
+                    <button type="button" onclick="checkEmail()">이메일 중복확인</button>
+                    <span id="emailCheckMsg"></span>
+                </div>
+                <div>
+                    <input type="submit" value="회원가입" />
+                </div>
+            </form>
+        </div>
     </div>
+
+<script layout:fragment="script" th:inline="javascript">
+
+    let isIdChecked = false;
+    let isEmailChecked = false;
+
+    function handleEmailDomainChange() {
+        const selected = document.getElementById('emailSelected').value;
+        const email2 = document.getElementById('email2');
+
+        if (selected === '') {
+            email2.value = '';
+            email2.readOnly = false;
+        } else {
+            email2.value = selected;
+            email2.readOnly = true;
+        }
+
+        isEmailChecked = false;
+        document.getElementById('emailCheckMsg').textContent = '';
+    }
+
+    // 아이디 중복 체크
+    async function checkMemberId() {
+        const memberId = document.getElementById('memberId').value.trim();
+
+        if (!memberId) {
+            alert('아이디를 입력해주세요.');
+            return;
+        }
+
+        if (memberId.length < 4 || memberId.length > 30) {
+            alert('아이디는 4자 이상 30자 이하로 입력해주세요.');
+            return;
+        }
+
+        try {
+            const response = await fetch('/api/member/check-id', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+                body: JSON.stringify({ memberId: memberId })
+            });
+
+            const result = await response.json();
+            const msgElement = document.getElementById('idCheckMsg');
+
+            if (result.success) {
+                msgElement.textContent = result.message;
+                msgElement.style.color = 'green';
+                isIdChecked = true;
+            } else {
+                msgElement.textContent = result.message;
+                msgElement.style.color = 'red';
+                isIdChecked = false;
+            }
+        } catch (error) {
+            console.error('Error: ', error);
+            alert('아이디 중복 체크 중 오류가 발생했습니다.');
+        }
+    }
+
+    // 이메일 중복 체크
+    async function checkEmail() {
+        const email1 = document.getElementById('email1').value.trim();
+        const email2 = document.getElementById('email2').value.trim();
+
+        if (!email1 || !email2) {
+            alert('이메일을 완전히 입력해주세요.');
+            return;
+        }
+
+        try {
+            const response = await fetch('/api/member/check-email', {
+                method: 'POST',
+                headers: {
+                    'Content-Type' : 'application/json'
+                },
+                body: JSON.stringify({
+                    email1: email1,
+                    email2: email2
+                })
+            });
+
+            const result = await response.json();
+            const msgElement = document.getElementById('emailCheckMsg');
+
+            if (result.success) {
+                msgElement.textContent = result.message;
+                msgElement.style.color = 'green';
+                isEmailChecked = true;
+            } else {
+                msgElement.textContent = result.message;
+                msgElement.style.color = 'red';
+                isEmailChecked = false;
+            }
+        } catch (error) {
+            console.error('Error: ', error);
+            alert('이메일 중복 체크 중 오류가 발생했습니다.');
+        }
+    }
+
+    document.addEventListener('DOMContentLoaded', function() {
+        document.getElementById('memberPwCheck').addEventListener('keyup', function() {
+            const pw = document.getElementById('memberPw').value;
+            const pwCheck = this.value;
+            const msgElement = document.getElementById('pwCheckMsg');
+
+            if (pwCheck === '') {
+                msgElement.textContent = '';
+                return;
+            }
+
+            if (pw === pwCheck) {
+                msgElement.textContent = '비밀번호가 일치합니다.';
+                msgElement.style.color = 'green';
+            } else {
+                msgElement.textContent = '비밀번호가 일치하지 않습니다.';
+                msgElement.style.color = 'red';
+            }
+        });
+
+        // 아이디 변경 시 중복확인 초기화
+        document.getElementById('memberId').addEventListener('input', function() {
+            isIdChecked = false;
+            document.getElementById('idCheckMsg').textContent = '';
+        });
+
+        // 이메일 변경 시 중복확인 초기화
+        document.getElementById('email1').addEventListener('input', function() {
+            isEmailChecked = false;
+            document.getElementById('emailCheckMsg').textContent = '';
+        });
+
+        document.getElementById('email2').addEventListener('input', function() {
+            isEmailChecked = false;
+            document.getElementById('emailCheckMsg').textContent = '';
+        });
+    });
+
+
+    // 폼 제출 전 최종 검증
+    function validateForm() {
+        const memberId = document.getElementById('memberId').value.trim();
+        const memberPw = document.getElementById('memberPw').value;
+        const memberPwCheck = document.getElementById('memberPwCheck').value;
+        const memberName = document.getElementById('memberName').value.trim();
+        const email1 = document.getElementById('email1').value.trim();
+        const email2 = document.getElementById('email2').value.trim();
+        const fullEmail = email1 + '@' + email2;
+
+        if (!memberId || !memberPw || !memberPwCheck || !memberName || !email1 || !email2) {
+            alert('모든 항목을 입력해주세요.');
+            return false;
+        }
+
+        if (!isIdChecked) {
+            alert('아이디 중복 확인을 해주세요.');
+            return false;
+        }
+
+        if (memberId.length < 4 || memberId.length > 30) {
+            alert('아이디는 4자 이상 30자 이하로 입력해주세요.');
+            return false;
+        }
+
+        if (memberName.length > 20) {
+            alert('이름은 20자 이하로 입력해주세요.');
+            return false;
+        }
+
+        if (!isEmailChecked) {
+            alert('이메일 중복 확인을 해주세요.');
+            return false;
+        }
+
+        const pattern = /^[a-zA-Z0-9._-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$/;
+        if (!pattern.test(fullEmail)) {
+            this.errors.email = '올바른 이메일 형식이 아닙니다.';
+            return false;
+        }
+
+        if (memberPw !== memberPwCheck) {
+            alert('비밀번호가 일치하지 않습니다.');
+            return false;
+        }
+
+        if (memberPw.length < 8) {
+            alert('비밀번호는 8자 이상 입력해주세요.');
+            return false;
+        }
+    }
+</script>
 
 </html>
