@@ -1,0 +1,82 @@
+<html xmlns:th="http://www.thymeleaf.org"
+      xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
+      layout:decorate="~{layout/layout}">
+
+    <div layout:fragment="content">
+        <div class="container">
+            <h1 th:text="${pageTitle}">팀 목록</h1>
+
+            <div class="tabs">
+                <a th:href="@{/teams}"
+                   th:classappend="${!isAllTeamsView} ? 'active' : ''"
+                   class="tab">내 팀</a>
+                <a th:href="@{/teams/all}"
+                   th:classappend="${isAllTeamsView} ? 'active' : ''"
+                   class="tab">전체 팀 탐색</a>
+            </div>
+
+            <a th:href="@{/teams/create}">새 팀 만들기</a>
+
+            <div th:if="${teams.isEmpty()}">
+                <p>팀이 없습니다.</p>
+            </div>
+
+            <div th:each="team : ${teams}">
+                <h3>
+                    <a th:href="@{/teams/{id}(id=${team.teamNo})}" th:text="${team.teamName}">팀 이름</a>
+                </h3>
+
+                <p th:text="${team.description}">팀 설명</p>
+
+                <div>
+                    <span th:text="${team.memberCount}">0</span>명
+
+                    팀장: <span th:text="${team.ownerName}">소유자</span> |
+                    생성일: <span th:text="${#temporals.format(team.createdAt, 'yyyy-MM-dd HH:mm')}">날짜</span>
+                </div>
+
+                <div th:if="${isAllTeamsView and !team.joined}">
+                    <a th:href="@{/teams/{id}/join-request(id=${team.teamNo})}">가입 요청</a>
+                </div>
+            </div>
+
+            <!-- pagination -->
+            <div class="pagination" th:if="${page.totalPages > 0}">
+                <!-- 이전 페이지 -->
+                <a th:if="${page.hasPrevious()}"
+                   th:href="@{${isAllTeamsView ? '/teams/all' : '/teams'}(page=${page.number - 1}, size=${page.size})}">
+                    이전
+                </a>
+                <span th:unless="${page.hasPrevious()}" class="disabled">이전</span>
+
+                <!-- 페이지 번호 -->
+                <th:block th:each="i : ${#numbers.sequence(0, page.totalPages - 1)}">
+                    <!-- 현재 페이지 기준 ±2 페이지만 표시 -->
+                    <th:block th:if="${i >= page.number - 2 and i <= page.number + 2}">
+                        <span th:if="${i == page.number}" class="current" th:text="${i + 1}">1</span>
+                        <a th:unless="${i == page.number}"
+                           th:href="@{${isAllTeamsView ? '/teams/all' : '/teams'}(page=${i}, size=${page.size})}"
+                           th:text="${i + 1}">1</a>
+                    </th:block>
+                </th:block>
+
+                <!-- 다음 페이지 -->
+                <a th:if="${page.hasNext()}"
+                   th:href="@{${isAllTeamsView ? '/teams/all' : '/teams'}(page=${page.number + 1}, size=${page.size})}">
+                    다음
+                </a>
+                <span th:unless="${page.hasNext()}" class="disabled">다음</span>
+            </div>
+
+            <!-- 페이지 정보 -->
+            <div style="text-align: center; color: #666; margin-top: 10px;">
+                <small>
+                    전체 <span th:text="${page.totalElements}">0</span>개 중
+                    <span th:text="${page.number * page.size + 1}">1</span> -
+                    <span th:text="${page.number * page.size + page.numberOfElements}">10</span>개 표시
+                </small>
+            </div>
+        </div>
+    </div>
+
+</html>

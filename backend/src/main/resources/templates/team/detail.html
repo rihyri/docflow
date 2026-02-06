@@ -1,0 +1,56 @@
+<html xmlns:th="http://www.thymeleaf.org"
+      xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
+      layout:decorate="~{layout/layout}">
+
+<div layout:fragment="content">
+    <div class="container">
+        <div class="team-header">
+            <h1 th:text="${team.teamName}">팀 이름</h1>
+            <span th:text="${team.myRole}">내 역할</span>
+        </div>
+    </div>
+
+    <div class="team-info">
+        <div class="info-row">
+            <strong>팀장</strong>
+            <span th:text="${team.ownerName}">소유자</span>
+        </div>
+        <div class="info_row">
+            <strong>생성일:</strong>
+            <span th:text="${#temporals.format(team.createdAt, 'yyyy-MM-dd HH:mm')}">날짜</span>
+        </div>
+        <div class="info-row" th:if="${team.description != null}">
+            <strong>설명:</strong>
+            <p th:text="${team.description}">팀 설명</p>
+        </div>
+    </div>
+
+    <div>
+        <a th:href="@{/teams}">목록으로</a>
+
+        <a th:if="${team.myRole.name() == 'OWNER'}"
+           th:href="@{/teams/{id}/edit(id=${team.teamNo})}"
+        >팀 정보 수정</a>
+
+        <button th:if="${team.myRole.name() == 'OWNER'}"
+                onclick="deleteTeam()">
+            팀 삭제
+        </button>
+    </div>
+</div>
+
+<script layout:fragment="script" th:inline="javascript">
+    /*<![CDATA[*/
+    var message = /*[[${message}]]*/ null;
+    var error = /*[[${error}]]*/ null;
+
+    if (message) {
+        alert(message);
+    }
+    if (error) {
+        alert("에러: " + error);
+    }
+    /*]]>*/
+</script>
+
+</html>

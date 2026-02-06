@@ -1,0 +1,66 @@
+<html xmlns:th="http://www.thymeleaf.org"
+      xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
+      layout:decorate="~{layout/layout}">
+
+<div layout:fragment="content">
+    <div class="container">
+        <h1>새로운 팀 생성</h1>
+
+        <!-- th:action 사용하면 CSRF 토큰이 자동으로 추가됨 -->
+        <form th:action="@{/teams/create}"
+              th:object="${teamCreateRequest}"
+              method="post">
+
+            <!-- 명시적 CSRF 토큰 추가 (선택사항, Thymeleaf가 자동으로 추가하지만 확실하게) -->
+
+            <div class="form-group">
+                <label>팀 이름 <span style="color: red;">*</span></label>
+                <input type="text"
+                       name="teamName"
+                       placeholder="예: 개발팀, 마케팅팀"
+                       maxlength="100"
+                       required>
+                <div class="error" th:if="${#fields.hasErrors('teamName')}"
+                     th:errors="*{teamName}" style="color: red;">
+                    팀 이름 오류
+                </div>
+            </div>
+
+            <div class="form-group">
+                <label>팀 설명</label>
+                <textarea name="description"
+                          placeholder="팀에 대한 간단한 설명을 입력해주세요. (선택사항)"
+                          id="description
+"
+                          maxlength="500"></textarea>
+                <div class="error" th:if="${#fields.hasErrors('description')}"
+                     th:errors="*{description}" style="color: red;">
+                    설명 오류
+                </div>
+                <small>최대 500자</small>
+            </div>
+
+            <div>
+                <button type="submit">팀 만들기</button>
+                <a th:href="@{/teams}">취소</a>
+            </div>
+        </form>
+
+    </div>
+</div>
+
+<script layout:fragment="script" th:inline="javascript">
+    /*<![CDATA[*/
+    var message = /*[[${message}]]*/ null;
+    var error = /*[[${error}]]*/ null;
+
+    if (message) {
+        alert(message);
+    }
+    if (error) {
+        alert("에러: " + error);
+    }
+    /*]]>*/
+</script>
+
+</html>

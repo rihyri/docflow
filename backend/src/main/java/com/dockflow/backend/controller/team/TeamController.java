@@ -1,0 +1,102 @@
+package com.dockflow.backend.controller.team;
+
+import com.dockflow.backend.dto.team.TeamCreateRequest;
+import com.dockflow.backend.dto.team.TeamDetailResponse;
+import com.dockflow.backend.dto.team.TeamListResponse;
+import com.dockflow.backend.dto.team.TeamResponse;
+import com.dockflow.backend.service.team.TeamService;
+import jakarta.validation.Valid;
+import lombok.RequiredArgsConstructor;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Sort;
+import org.springframework.security.core.annotation.AuthenticationPrincipal;
+import org.springframework.security.core.userdetails.UserDetails;
+import org.springframework.stereotype.Controller;
+import org.springframework.ui.Model;
+import org.springframework.validation.BindingResult;
+import org.springframework.web.bind.annotation.*;
+import org.springframework.web.servlet.mvc.support.RedirectAttributes;
+
+import java.util.List;
+
+@Controller
+@RequestMapping("/teams")
+@RequiredArgsConstructor
+public class TeamController {
+
+    private final TeamService teamService;
+
+    /* 전체 팀 목록 */
+    @GetMapping("/all")
+    public String allList(@AuthenticationPrincipal UserDetails userDetails,
+                          @RequestParam(value = "page", defaultValue = "0") int page,
+                          @RequestParam(value = "size", defaultValue = "10") int size,
+                          Model model) {
+
+        Pageable pageable = PageRequest.of(page, size, Sort.by("createdAt").descending());
+        Page<TeamListResponse> teamPage = teamService.getAllActiveTeams(userDetails.getUsername(), pageable);
+
+        model.addAttribute("teams", teamPage.getContent());
+        model.addAttribute("page", teamPage);
+        model.addAttribute("pageTitle", "전체 팀 목록");
+        model.addAttribute("isAllTeamsView", true);
+        return "team/list";
+    }
+
+    /* 가입된 팀 목록 */
+    @GetMapping
+    public String myTeamList(@AuthenticationPrincipal UserDetails userDetails,
+                             @RequestParam(value = "page", defaultValue = "0") int page,
+                             @RequestParam(value = "size", defaultValue = "10") int size,
+                             Model model) {
+
+        Pageable pageable = PageRequest.of(page, size, Sort.by("createdAt").descending());
+        Page<TeamListResponse> teamPage = teamService.getMyTeams(userDetails.getUsername(), pageable);
+
+        model.addAttribute("teams", teamPage.getContent());
+        model.addAttribute("page", teamPage);
+        model.addAttribute("pageTitle", "내 팀 목록");
+        model.addAttribute("isAllTeamsView", false);
+
+        return "team/list";
+    }
+
+    /* 팀 생성 페이지 */
+    @GetMapping("/create")
+    public String createForm(Model model) {
+        model.addAttribute("teamCreateRequest", new TeamCreateRequest());
+        return "team/create";
+    }
+
+    /* 팀 생성 처리 */
+    @PostMapping("/create")
+    public String createTeam(@Valid @ModelAttribute("teamCreateRequest") TeamCreateRequest request,
+                             BindingResult bindingResult,
+                             @AuthenticationPrincipal UserDetails userDetails,
+                             RedirectAttributes redirectAttributes,
+                             Model model) {
+
+        if (bindingResult.hasErrors()) {
+            return "team/create";
+        }
+
+        try {
+            TeamResponse team = teamService.createTeam(request, userDetails.getUsername());
+            redirectAttributes.addFlashAttribute("message", "팀 생성이 완료되었습니다.");
+            return "redirect:/teams/" + team.getTeamNo();
+        } catch (Exception e) {
+            model.addAttribute("error", e.getMessage());
+            return "team/create";
+        }
+    }
+
+    /* 팀 상세 페이지 */
+    @GetMapping("/{teamNo}")
+    public String teamDetail(@PathVariable("teamNo") Long teamNo, @AuthenticationPrincipal UserDetails userDetails, Model model) {
+        TeamDetailResponse team = teamService.getTeamDetail(teamNo, userDetails.getUsername());
+        model.addAttribute("team", team);
+        return "team/detail";
+    }
+}
