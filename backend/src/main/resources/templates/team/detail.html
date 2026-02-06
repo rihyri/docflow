@@ -28,9 +28,7 @@
     <div>
         <a th:href="@{/teams}">목록으로</a>
 
-        <a th:if="${team.myRole.name() == 'OWNER'}"
-           th:href="@{/teams/{id}/edit(id=${team.teamNo})}"
-        >팀 정보 수정</a>
+        <button th:if="${team.myRole.name() == 'OWNER'}" onclick="showModifyModal()">팀정보 수정</button>
 
         <button th:if="${team.myRole.name() == 'OWNER'}"
                 onclick="deleteTeam()">
@@ -77,6 +75,28 @@
             </form>
         </div>
     </div>
+
+    <!-- 팀 정보 수정하기 모달 -->
+    <div id="modifyModal" class="modal" style="display: none;">
+        <div class="modal-content">
+            <span class="close" onclick="closeModifyModal()">&times;</span>
+            <h2>팀 정보 수정</h2>
+            <form id="modifyForm" onsubmit="modifyTeam(event)">
+                <div class="form-group">
+                    <label>팀 이름</label>
+                    <input th:value="${team.teamName}" type="text" id="teamName" name="teamName" />
+                </div>
+                <div class="form-group">
+                    <label>팀 정보</label>
+                    <textarea th:text="${team.description}" id="description" name="description"></textarea>
+                </div>
+                <div>
+                    <button type="submit">수정하기</button>
+                    <button type="button" onclick="closeModifyModal()">닫기</button>
+                </div>
+            </form>
+        </div>
+    </div>
 </div>
 
 <script layout:fragment="script" th:inline="javascript">
@@ -101,10 +121,19 @@
         document.getElementById('inviteModal').style.display = 'block';
     }
 
+    function showModifyModal() {
+        document.getElementById('modifyModal').style.display = 'block';
+    }
+
     // 모달 닫기
     function closeInviteModal() {
         document.getElementById('inviteModal').style.display = 'none';
         document.getElementById('inviteForm').reset();
+    }
+
+    function closeModifyModal() {
+        document.getElementById('modifyModal').style.display = 'none';
+        document.getElementById('modifyForm').reset();
     }
 
     // 멤버 초대
@@ -137,6 +166,42 @@
             alert('오류가 발생하였습니다: ' + error);
         });
     }
+
+    function modifyTeam(event) {
+
+        event.preventDefault();
+
+        const teamName = document.getElementById('teamName').value;
+        const description = document.getElementById('description').value;
+
+        if (!teamName.trim()) {
+            alert('팀 이름은 반드시 입력해야합니다.');
+            return false;
+        }
+
+        fetch(`/teams/${teamNo}/modify`, {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+                [csrfHeader]: csrfToken
+            },
+            body: JSON.stringify({ teamName: teamName, description: description })
+        })
+        .then(response => response.json())
+        .then(data => {
+            if (data.success) {
+                alert('팀 정보가 성공적으로 수행되었습니다.');
+                closeModifyModal();
+                location.reload();
+            } else {
+                alert('팀 정보 수정 실패: ' + data.message);
+            }
+        })
+        .catch(error => {
+            alert('오류가 발생하였습니다.: ' + error);
+        });
+    }
+
 </script>
 
 </html>

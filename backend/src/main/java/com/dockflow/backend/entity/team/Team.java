@@ -14,6 +14,7 @@ import java.util.List;
 @Entity
 @Table(name = "TEAM")
 @Getter
+@Setter
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 @AllArgsConstructor
 @Builder

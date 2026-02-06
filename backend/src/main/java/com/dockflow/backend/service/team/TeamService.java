@@ -163,4 +163,28 @@ public class TeamService {
 
         return TeamDetailResponse.from(team, members, teamMember.getRole());
     }
+
+    /* 팀 정보 수정 */
+    @Transactional
+    public void modifyTeam(Long teamNo, String inviterMemberId, TeamModifyRequest request) {
+
+        Team team = teamRepository.findById(teamNo).orElseThrow(() -> new IllegalArgumentException("존재하지 않는 팀입니다."));
+
+        // 정보 수정하는 사람 권한 확인 (ADMIN 이상만)
+        Member inviter = memberRepository.findByMemberId(inviterMemberId).orElseThrow(() -> new IllegalArgumentException("존재하지 않는 회원입니다."));
+
+        TeamMember inviterTeamMember = teamMemberRepository.findByTeamAndMember(team, inviter).orElseThrow(() -> new IllegalArgumentException("팀 멤버가 아닙니다."));
+
+        if (!inviterTeamMember.hasPermission(TeamMember.TeamRole.ADMIN)) {
+            throw new IllegalArgumentException("팀 정보를 수정할 권한이 없습니다.");
+        }
+
+        String teamName = request.getTeamName();
+        String description = request.getDescription();
+
+        team.setTeamName(teamName);
+        team.setDescription(description);
+
+        teamRepository.save(team);
+    }
 }

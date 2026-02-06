@@ -120,4 +120,28 @@ public class TeamController {
             return ApiResponse.error(e.getMessage());
         }
     }
+
+    /* 팀 정보 수정 */
+    @PostMapping("/{teamNo}/modify")
+    @ResponseBody
+    public ApiResponse<Void> modifyTeam(
+            @PathVariable("teamNo") Long teamNo,
+            @Valid @RequestBody TeamModifyRequest request,
+            BindingResult bindingResult,
+            @AuthenticationPrincipal UserDetails userDetails
+    ) {
+
+        if (bindingResult.hasErrors()) {
+            String errorMessage = bindingResult.getAllErrors().get(0).getDefaultMessage();
+            return ApiResponse.error(errorMessage);
+        }
+
+        try {
+            teamService.modifyTeam(teamNo, userDetails.getUsername(), request);
+            return ApiResponse.success(null);
+        } catch (IllegalArgumentException e) {
+            return ApiResponse.error(e.getMessage());
+        }
+    }
+
 }
