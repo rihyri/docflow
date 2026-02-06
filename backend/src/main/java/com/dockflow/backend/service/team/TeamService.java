@@ -74,6 +74,10 @@ public class TeamService {
             throw new IllegalArgumentException("이미 팀에 속한 멤버입니다.");
         }
 
+        if (inviter.getMemberNo().equals(invitee.getMemberNo())) {
+            throw new IllegalArgumentException("자기 자신을 초대할 수 없습니다.");
+        }
+
         TeamMember newMember = TeamMember.builder()
                 .team(team)
                 .member(invitee)

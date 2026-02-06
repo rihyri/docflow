@@ -1,9 +1,7 @@
 package com.dockflow.backend.controller.team;
 
-import com.dockflow.backend.dto.team.TeamCreateRequest;
-import com.dockflow.backend.dto.team.TeamDetailResponse;
-import com.dockflow.backend.dto.team.TeamListResponse;
-import com.dockflow.backend.dto.team.TeamResponse;
+import com.dockflow.backend.dto.team.*;
+import com.dockflow.backend.response.ApiResponse;
 import com.dockflow.backend.service.team.TeamService;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
@@ -11,6 +9,7 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
+import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.stereotype.Controller;
@@ -98,5 +97,27 @@ public class TeamController {
         TeamDetailResponse team = teamService.getTeamDetail(teamNo, userDetails.getUsername());
         model.addAttribute("team", team);
         return "team/detail";
+    }
+
+    /* 팀원 초대 */
+    @PostMapping("/{teamNo}/invite")
+    @ResponseBody
+    public ApiResponse<Void> inviteMember(
+            @PathVariable("teamNo") Long teamNo,
+            @Valid @RequestBody TeamMemberInviteRequest request,
+            BindingResult bindingResult,
+            @AuthenticationPrincipal UserDetails userDetails) {
+
+        if (bindingResult.hasErrors()) {
+            String errorMessage = bindingResult.getAllErrors().get(0).getDefaultMessage();
+            return ApiResponse.error(errorMessage);
+        }
+
+        try {
+            teamService.inviteMember(teamNo, userDetails.getUsername(), request);
+            return ApiResponse.success(null);
+        } catch (IllegalArgumentException e) {
+            return ApiResponse.error(e.getMessage());
+        }
     }
 }

@@ -37,10 +37,54 @@
             팀 삭제
         </button>
     </div>
+
+    <div class="team-members">
+        <div class="section-header">
+            <h2>팀 멤버 (<span th:text="${team.members.size()}">0</span>명)</h2>
+
+            <button th:if="${team.myRole.name() == 'OWNER' or team.myRole.name() == 'ADMIN'}" onclick="showInviteModal()">
+                멤버 초대
+            </button>
+        </div>
+    </div>
+
+    <!-- 멤버 초대 모달 -->
+    <div id="inviteModal" class="modal" style="display: none;">
+        <div class="modal-content">
+            <span class="close" onclick="closeInviteModal()">&times;</span>
+            <h2>멤버 초대</h2>
+            <form id="inviteForm" onsubmit="inviteMember(event)">
+
+                <div class="form-group">
+                    <label>아이디</label>
+                    <input type="text" id="inviteMemberId" placeholder="초대할 사람의 아이디" required />
+                </div>
+
+                <div class="form-group">
+                    <label>역할</label>
+                    <select id="inviteRole" required>
+                        <option value="MEMBER">MEMBER (일반 멤버)</option>
+                        <option value="ADMIN" th:if="${team.myRole.name() == 'OWNER'}">ADMIN (관리자)</option>
+                        <option value="VIEWER">VIEWER (조회만 가능)</option>
+                    </select>
+                </div>
+
+                <div>
+                    <button type="submit">초대하기</button>
+                    <button type="button" onclick="closeInviteModal()">닫기</button>
+                </div>
+
+            </form>
+        </div>
+    </div>
 </div>
 
 <script layout:fragment="script" th:inline="javascript">
+
     /*<![CDATA[*/
+    var teamNo = /*[[${team.teamNo}]]*/ 0;
+    const csrfToken = /*[[${_csrf.token}]]*/ null;
+    const csrfHeader = /*[[${_csrf.headerName}]]*/ null;
     var message = /*[[${message}]]*/ null;
     var error = /*[[${error}]]*/ null;
 
@@ -51,6 +95,48 @@
         alert("에러: " + error);
     }
     /*]]>*/
+
+    // 모달 열기
+    function showInviteModal() {
+        document.getElementById('inviteModal').style.display = 'block';
+    }
+
+    // 모달 닫기
+    function closeInviteModal() {
+        document.getElementById('inviteModal').style.display = 'none';
+        document.getElementById('inviteForm').reset();
+    }
+
+    // 멤버 초대
+    function inviteMember(event) {
+
+        event.preventDefault();
+
+        const memberId = document.getElementById('inviteMemberId').value;
+        const role = document.getElementById('inviteRole').value;
+
+        fetch(`/teams/${teamNo}/invite`, {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+                [csrfHeader]: csrfToken
+            },
+            body: JSON.stringify({ memberId: memberId, role: role })
+        })
+        .then(response => response.json())
+        .then(data => {
+            if (data.success) {
+                alert('멤버 초대가 완료되었습니다.');
+                closeInviteModal();
+                location.reload();
+            } else {
+                alert('초대 실패: ' + data.message);
+            }
+        })
+        .catch(error => {
+            alert('오류가 발생하였습니다: ' + error);
+        });
+    }
 </script>
 
 </html>
