@@ -31,7 +31,7 @@
         <button th:if="${team.myRole.name() == 'OWNER'}" onclick="showModifyModal()">팀정보 수정</button>
 
         <button th:if="${team.myRole.name() == 'OWNER'}"
-                onclick="deleteTeam()">
+                onclick="deleteTeam(event)">
             팀 삭제
         </button>
     </div>
@@ -195,6 +195,32 @@
                 location.reload();
             } else {
                 alert('팀 정보 수정 실패: ' + data.message);
+            }
+        })
+        .catch(error => {
+            alert('오류가 발생하였습니다.: ' + error);
+        });
+    }
+
+    function deleteTeam(event) {
+
+        event.preventDefault();
+
+        fetch(`/teams/${teamNo}/inactive`, {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+                [csrfHeader]: csrfToken
+            }
+        })
+        .then(response => response.json())
+        .then(data => {
+            if (data.success) {
+                alert('팀이 삭제되었습니다.');
+                closeInviteModal();
+                window.location.href = '/teams';
+            } else {
+                alert('팀 삭제 실패: ' + data.message);
             }
         })
         .catch(error => {

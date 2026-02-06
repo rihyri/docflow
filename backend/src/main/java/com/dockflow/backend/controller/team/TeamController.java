@@ -144,4 +144,18 @@ public class TeamController {
         }
     }
 
+    /* 팀 비활성화 */
+    @PostMapping("/{teamNo}/inactive")
+    @ResponseBody
+    public ApiResponse<Void> inactiveTeam(
+            @PathVariable("teamNo") Long teamNo,
+            @AuthenticationPrincipal UserDetails userDetails
+    ) {
+        try {
+            teamService.inActive(teamNo, userDetails.getUsername());
+            return ApiResponse.success(null);
+        } catch (IllegalArgumentException e) {
+            return ApiResponse.error(e.getMessage());
+        }
+    }
 }

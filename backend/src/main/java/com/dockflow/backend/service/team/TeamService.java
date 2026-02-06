@@ -187,4 +187,24 @@ public class TeamService {
 
         teamRepository.save(team);
     }
+
+    /* 팀 삭제 (isActive: false) */
+    @Transactional
+    public void inActive(Long teamNo, String inviterMemberId) {
+
+        Team team = teamRepository.findById(teamNo).orElseThrow(() -> new IllegalArgumentException("존재하지 않는 팀입니다."));
+
+        Member inviter = memberRepository.findByMemberId(inviterMemberId).orElseThrow(() -> new IllegalArgumentException("존재하지 않는 회원입니다."));
+
+        TeamMember inviterTeamMember = teamMemberRepository.findByTeamAndMember(team, inviter).orElseThrow(() -> new IllegalArgumentException("팀 멤버가 아닙니다."));
+
+        // 팀 삭제 권한은 오직 owner만
+        if (!inviterTeamMember.hasPermission(TeamMember.TeamRole.OWNER)) {
+            throw new IllegalArgumentException("팀 정보를 수정할 권한이 없습니다.");
+        }
+
+        team.setIsActive(false);
+
+        teamRepository.save(team);
+    }
 }
