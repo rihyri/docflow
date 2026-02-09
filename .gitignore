@@ -20,3 +20,8 @@ backend/src/main/resources/application-*.properties
 
 # Docker
 docker-compose.yml
+
+# Upload
+/docflow/uploads/
+uploads/
+C:/docflow/uploads/
