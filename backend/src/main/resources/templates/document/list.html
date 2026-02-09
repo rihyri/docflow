@@ -1,0 +1,80 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org"
+      xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
+      layout:decorate="~{layout/layout}">
+
+<div layout:fragment="content">
+    <div class="container">
+        <h1>문서 목록</h1>
+
+        <div th:if="${message}">
+            <p th:text="${message}"></p>
+        </div>
+
+        <div>
+            <a th:href="@{/documents/upload(teamNo=${teamNo})}">
+                문서 업로드
+            </a>
+        </div>
+
+        <table>
+            <thead>
+                <tr>
+                    <th>번호</th>
+                    <th>제목</th>
+                    <th>카테고리</th>
+                    <th>파일명</th>
+                    <th>크기</th>
+                    <th>작성자</th>
+                    <th>상태</th>
+                    <th>등록일</th>
+                    <th>관리</th>
+                </tr>
+            </thead>
+            <tbody>
+                <tr th:if="${#lists.isEmpty(documents)}">
+                   <td colspan="9">
+                       등록된 문서가 없습니다.
+                   </td>
+                </tr>
+                <tr th:each="doc, stat : ${documents}">
+                    <td th:text="${page.totalElements - (page.number * page.size) - stat.index}"></td>
+                    <td>
+                        <a th:href="@{/documents/{documentNo}(documentNo=${doc.documentNo})}"
+                           th:text="${doc.title}"></a>
+                    </td>
+                    <td th:text="${doc.categoryDescription}"></td>
+                    <td th:text="${doc.originalFileName}"></td>
+                    <td th:text="${#numbers.formatDecimal(doc.fileSize / 1024, 1, 2)} + ' KB'"></td>
+                    <td th:text="${doc.uploadUserName}"></td>
+                    <td>
+                        <span th:text="${doc.statusDescription}"
+                              th:classappend="${doc.status.name() == 'COMPLETED' ? 'status-completed' :
+                                             (doc.status.name() == 'PROCESSING' ? 'status-processing' : 'status-failed')}">
+                        </span>
+                    </td>
+                    <td th:text="${#temporals.format(doc.createdAt, 'yyyy-MM-dd HH:mm')}"></td>
+                </tr>
+            </tbody>
+        </table>
+
+        <!-- 페이징 -->
+        <div class="pagination" th:if="${page.totalPages > 0}">
+            <a th:if="${page.number > 0}"
+               th:href="@{/documents/list(teamNo=${teamNo}, page=${page.number - 1}, size=${page.size}}"
+            >이전</a>
+        </div>
+
+        <span th:each="i : ${#numbers.sequence(0, page.totalPages - 1)}">
+            <a th:if="${i == page.number}"
+               th:text="${i + 1}"
+               class="page-link active"></a>
+        </span>
+
+        <a th:if="${page.number < page.totalPages - 1}"
+           th:href="@{/documents/list(teamNo=${teamNo}, page=${page.number + 1}, size=${page.size})}"
+           class="page-link">다음</a>
+
+    </div>
+</body>
+</div>

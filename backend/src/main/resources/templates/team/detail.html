@@ -28,6 +28,10 @@
     <div>
         <a th:href="@{/teams}">목록으로</a>
 
+        <a th:href="@{/documents/list(teamNo=${team.teamNo})}">
+            팀 문서 관리
+        </a>
+
         <button th:if="${team.myRole.name() == 'OWNER'}" onclick="showModifyModal()">팀정보 수정</button>
 
         <button th:if="${team.myRole.name() == 'OWNER'}"
