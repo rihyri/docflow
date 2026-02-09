@@ -207,4 +207,21 @@ public class TeamService {
 
         teamRepository.save(team);
     }
+
+    /* 팀 탈퇴 (회원만) */
+    @Transactional
+    public void withdrawTeam(Long teamNo, String memberId) {
+
+        Team team = teamRepository.findById(teamNo).orElseThrow(() -> new IllegalArgumentException("존재하지 않는 팀입니다."));
+
+        Member member = memberRepository.findByMemberId(memberId).orElseThrow(() -> new IllegalArgumentException("존재하지 않는 회원입니다."));
+
+        TeamMember teamMember = teamMemberRepository.findByTeamAndMember(team, member).orElseThrow(() -> new IllegalArgumentException("팀 멤버가 아닙니다."));
+
+        if (teamMember.hasPermission(TeamMember.TeamRole.OWNER)) {
+            throw new IllegalArgumentException("팀장은 탈퇴할 수 없습니다.");
+        }
+
+        teamMemberRepository.deleteByTeamAndMember(team, member);
+    }
 }

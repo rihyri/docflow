@@ -34,6 +34,10 @@
                 onclick="deleteTeam(event)">
             팀 삭제
         </button>
+
+        <button th:if="${team.myRole != '' && team.myRole.name() != 'OWNER'}" onclick="withdrawTeam(event)">
+            탈퇴하기
+        </button>
     </div>
 
     <div class="team-members">
@@ -167,6 +171,7 @@
         });
     }
 
+    // 팀 정보 변경
     function modifyTeam(event) {
 
         event.preventDefault();
@@ -202,30 +207,63 @@
         });
     }
 
+    // 팀 삭제
     function deleteTeam(event) {
 
         event.preventDefault();
 
-        fetch(`/teams/${teamNo}/inactive`, {
-            method: 'POST',
-            headers: {
-                'Content-Type': 'application/json',
-                [csrfHeader]: csrfToken
-            }
-        })
-        .then(response => response.json())
-        .then(data => {
-            if (data.success) {
-                alert('팀이 삭제되었습니다.');
-                closeInviteModal();
-                window.location.href = '/teams';
-            } else {
-                alert('팀 삭제 실패: ' + data.message);
-            }
-        })
-        .catch(error => {
-            alert('오류가 발생하였습니다.: ' + error);
-        });
+        if (confirm('정말로 삭제하시겠습니까?\n* 삭제된 팀은 복구가 어렵습니다.')) {
+            fetch(`/teams/${teamNo}/inactive`, {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                    [csrfHeader]: csrfToken
+                }
+            })
+            .then(response => response.json())
+            .then(data => {
+                if (data.success) {
+                    alert('팀이 삭제되었습니다.');
+                    closeInviteModal();
+                    window.location.href = '/teams';
+                } else {
+                    alert('팀 삭제 실패: ' + data.message);
+                }
+            })
+            .catch(error => {
+                alert('오류가 발생하였습니다.: ' + error);
+            });
+        }
+    }
+
+    // 회원 팀 탈퇴
+    function withdrawTeam(event) {
+
+        event.preventDefault();
+
+        if (confirm('정말로 팀을 탈퇴하시겠습니까?\n재가입을 원할 경우 가입 절차를 다시 실행해야 합니다.')) {
+
+            fetch(`/teams/${teamNo}/withdraw-team`, {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                    [csrfHeader]: csrfToken
+                }
+            })
+            .then(response => response.json())
+            .then(data => {
+                if (data.success) {
+                    alert('탈퇴가 성공적으로 이루어졌습니다.');
+                    window.location.href = '/teams';
+                } else {
+                    alert('회원 팀 탈퇴 실패: ' + data.message);
+                }
+            })
+            .catch(error => {
+                alert('오류가 발생하였습니다.: ' + error);
+            });
+        }
+
     }
 
 </script>

@@ -27,4 +27,7 @@ public interface TeamMemberRepository extends JpaRepository<TeamMember, Long> {
 
     // 권환 확인
     Optional<TeamMember> findByTeamAndMember(Team team, Member member);
+
+    // 팀 탈퇴
+    void deleteByTeamAndMember(Team team, Member member);
 }

@@ -158,4 +158,20 @@ public class TeamController {
             return ApiResponse.error(e.getMessage());
         }
     }
+
+    /* 회원 팀 탈퇴 */
+    @PostMapping("/{teamNo}/withdraw-team")
+    @ResponseBody
+    public ApiResponse<Void> withdrawTeam(
+            @PathVariable("teamNo") Long teamNo,
+            @AuthenticationPrincipal UserDetails userDetails
+    ) {
+        try {
+            teamService.withdrawTeam(teamNo, userDetails.getUsername());
+            return ApiResponse.success(null);
+        } catch (IllegalArgumentException e) {
+            return ApiResponse.error(e.getMessage());
+        }
+    }
+
 }
