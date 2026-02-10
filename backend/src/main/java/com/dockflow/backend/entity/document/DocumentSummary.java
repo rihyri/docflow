@@ -30,6 +30,13 @@ public class DocumentSummary {
     @Column(name = "ai_model_version", length = 50)
     private String aiModelVersion;
 
+    @Column(name = "summary_count", nullable = false)
+    @Builder.Default
+    private Integer summaryCount = 1;
+
+    @Column(name = "list_summarized_at")
+    private LocalDateTime lastSummarizedAt;
+
     @CreationTimestamp
     @Column(name = "created_at", nullable = false)
     private LocalDateTime createdAt;
@@ -37,4 +44,38 @@ public class DocumentSummary {
     @UpdateTimestamp
     @Column(name = "updated_at")
     private LocalDateTime updatedAt;
+
+    // 재요약 가능 여부 체크 (월 3회 제한)
+    public boolean canResummarize() {
+
+        if (lastSummarizedAt == null) {
+            return true;
+        }
+
+        LocalDateTime now = LocalDateTime.now();
+        LocalDateTime currentMonthStart = now.withDayOfMonth(1).withHour(0).withMinute(0).withSecond(0);
+
+        if (lastSummarizedAt.isAfter(currentMonthStart)) {
+            return summaryCount < 3;
+        }
+
+        return true;
+    }
+
+    // 재요약 실행
+    public void updateSummary(String summaryText, String aiModelVersion) {
+        this.summaryText = summaryText;
+        this.aiModelVersion = aiModelVersion;
+
+        LocalDateTime now = LocalDateTime.now();
+        LocalDateTime currentMonthStart = now.withDayOfMonth(1).withHour(0).withMinute(0).withSecond(0);
+
+        if (lastSummarizedAt == null || lastSummarizedAt.isBefore(currentMonthStart)) {
+            this.summaryCount = 1;
+        } else {
+            this.summaryCount++;
+        }
+
+        this.lastSummarizedAt = now;
+    }
 }

@@ -1,9 +1,6 @@
 package com.dockflow.backend.controller.document;
 
-import com.dockflow.backend.dto.document.DocumentCreateRequest;
-import com.dockflow.backend.dto.document.DocumentDetailResponse;
-import com.dockflow.backend.dto.document.DocumentResponse;
-import com.dockflow.backend.dto.document.DocumentUpdateRequest;
+import com.dockflow.backend.dto.document.*;
 import com.dockflow.backend.entity.document.Document;
 import com.dockflow.backend.response.ApiResponse;
 import com.dockflow.backend.service.document.DocumentService;
@@ -88,7 +85,7 @@ public class DocumentController {
             Model model
     ) {
 
-        DocumentDetailResponse document = documentService.getDocumentDetail(documentNo, userDetails.getUsername());
+        DocumentDetailDTO document = documentService.getDocumentDetail(documentNo, userDetails.getUsername());
 
         model.addAttribute("document", document);
         model.addAttribute("categories", Document.DocumentCategory.values());

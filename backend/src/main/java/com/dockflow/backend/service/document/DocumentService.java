@@ -1,16 +1,15 @@
 package com.dockflow.backend.service.document;
 
-import com.dockflow.backend.dto.document.DocumentCreateRequest;
-import com.dockflow.backend.dto.document.DocumentDetailResponse;
-import com.dockflow.backend.dto.document.DocumentResponse;
-import com.dockflow.backend.dto.document.DocumentUpdateRequest;
+import com.dockflow.backend.dto.document.*;
 import com.dockflow.backend.entity.document.Document;
 import com.dockflow.backend.entity.document.DocumentSummary;
+import com.dockflow.backend.entity.document.DocumentTag;
 import com.dockflow.backend.entity.member.Member;
 import com.dockflow.backend.entity.team.Team;
 import com.dockflow.backend.entity.team.TeamMember;
 import com.dockflow.backend.repository.document.DocumentRepository;
 import com.dockflow.backend.repository.document.DocumentSummaryRepository;
+import com.dockflow.backend.repository.document.DocumentTagRepository;
 import com.dockflow.backend.repository.member.MemberRepository;
 import com.dockflow.backend.repository.team.TeamMemberRepository;
 import com.dockflow.backend.repository.team.TeamRepository;
@@ -23,6 +22,9 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.multipart.MultipartFile;
 
+import java.util.List;
+import java.util.stream.Collectors;
+
 @Slf4j
 @Service
 @RequiredArgsConstructor
@@ -30,11 +32,13 @@ import org.springframework.web.multipart.MultipartFile;
 public class DocumentService {
 
     private final DocumentRepository documentRepository;
-    private final DocumentSummaryRepository documentSummaryRepository;
+    private final DocumentSummaryRepository summaryRepository;
+    private final DocumentTagRepository tagRepository;
     private final TeamRepository teamRepository;
     private final TeamMemberRepository teamMemberRepository;
     private final MemberRepository memberRepository;
     private final FileStorageService fileStorageService;
+    private final DocumentSummaryService documentSummaryService;
 
     /* 문서 업로드 */
     @Transactional
@@ -80,6 +84,9 @@ public class DocumentService {
 
         log.info("문서 업로드 완료: documentNo={}, title={}", savedDocument.getDocumentNo(), savedDocument.getTitle());
 
+        // 비동기로 AI 요약 실행
+        documentSummaryService.summarizeDocumentAsync(savedDocument.getDocumentNo());
+
         return DocumentResponse.from(savedDocument);
     }
 
@@ -103,7 +110,7 @@ public class DocumentService {
     }
 
     /* 문서 상세 조회 */
-    public DocumentDetailResponse getDocumentDetail(Long documentNo, String memberId) {
+    public DocumentDetailDTO getDocumentDetail(Long documentNo, String memberId) {
 
         // 1. 회원 조회
         Member member = memberRepository.findByMemberId(memberId).orElseThrow(() -> new IllegalArgumentException("존재하지 않는 사용자입니다."));
@@ -115,9 +122,36 @@ public class DocumentService {
         teamMemberRepository.findByTeamAndMember(document.getTeam(), member).orElseThrow(() -> new IllegalArgumentException("팀 멤버만 문서를 조회할 수 있습니다."));
 
         // 4. 요약 조회 (존재시)
-        DocumentSummary summary = documentSummaryRepository.findByDocumentDocumentNo(documentNo).orElse(null);
+        var summaryOpt = summaryRepository.findByDocument(document);
 
-        return DocumentDetailResponse.from(document, summary);
+        List<String> tags = tagRepository.findByDocument(document)
+                .stream()
+                .map(DocumentTag::getTagName)
+                .toList();
+
+        return DocumentDetailDTO.builder()
+                .documentNo(document.getDocumentNo())
+                .title(document.getTitle())
+                .originalFileName(document.getOriginalFileName())
+                .filePath(document.getFilePath())
+                .fileSize(document.getFileSize())
+                .uploadUserName(document.getUploadUser().getMemberName())
+                .teamNo(document.getTeam().getTeamNo())
+                .teamName(document.getTeam().getTeamName())
+                .category(document.getCategory())
+                .categoryDescription(document.getCategory().getDescription())
+                .status(document.getStatus())
+                .statusDescription(document.getStatus().getDescription())
+                .createdAt(document.getCreatedAt())
+                .updatedAt(document.getUpdatedAt())
+                .summaryText(summaryOpt.map(s -> s.getSummaryText()).orElse(null))
+                .aiModelVersion(summaryOpt.map(s -> s.getAiModelVersion()).orElse(null))
+                .summaryCreatedAt(summaryOpt.map(s -> s.getCreatedAt()).orElse(null))
+                .summaryCount(summaryOpt.map(s -> s.getSummaryCount()).orElse(0))
+                .tags(tags)
+                .canResummarize(summaryOpt.map(s -> s.canResummarize()).orElse(false))
+                .remainingResummaryCount(documentSummaryService.getRemainingResummaryCount(documentNo))
+                .build();
     }
 
     /* 문서 정보 수정 */

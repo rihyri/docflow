@@ -4,7 +4,7 @@
       layout:decorate="~{layout/layout}">
 
 <div layout:fragment="content">
-   <h1>문서 상세</h1>
+    <h1>문서 상세</h1>
 
     <div class="document-info">
         <table>
@@ -67,17 +67,53 @@
         </table>
     </div>
 
+    <div>
+        <button type="button" id="editBtn" onclick="toggleEdit()">
+            수정
+        </button>
+        <button type="button" id="saveBtn" onclick="saveDocument()" style="display: none;">
+            저장
+        </button>
+        <button type="button" id="cancelBtn" onclick="cancelEdit()" style="display: none;">
+            취소
+        </button>
+        <button type="button" onclick="deleteDocument()">
+            삭제
+        </button>
+        <a th:href="@{/documents/list(teamNo=${document.teamNo})}">
+            목록
+        </a>
+    </div>
+
     <!-- AI 요약 결과 -->
     <div th:if="${document.summaryText != null}">
         <h2>AI 요약</h2>
         <div>
+            <button type="button"
+                    id="resummarizeBtn"
+                    onclick="resummarize()"
+                    th:disabled="${!document.canResummarize}">
+                재요약하기
+            </button>
+            <span th:text="'(남은 횟수: ' + ${document.remainingResummaryCount} + '회)'"></span>
+        </div>
+
+        <div>
             <p th:text="${document.summaryText}"></p>
-            <div>
-                <small>
-                    AI 모델: <span th:text="${document.aiModelVersion}"></span> |
-                    생성일: <span th:text="${#temporals.format(document.summaryCreatedAt, 'yyyy-MM-dd HH:mm')}"></span>
-                </small>
-            </div>
+        </div>
+
+        <div th:if="${document.tags != null && !document.tags.isEmpty()}">
+            <strong>태그: </strong>
+            <span th:each="tag, iterStat : ${document.tags}">
+                <span th:text="${tag}"></span>
+                <span th:if="${!iterStat.last}">, </span>
+            </span>
+        </div>
+
+        <div>
+            AI 모델: <span th:text="${document.aiModelVersion}"></span>
+            생성일: <span th:text="${#temporals.format(document.summaryCreatedAt, 'yyyy-MM-dd HH:mm')}"></span>
+            요약 횟수: <span th:text="${document.summaryCount}"></span>
         </div>
     </div>
 
@@ -97,125 +133,135 @@
         </div>
     </div>
 
-    <div>
-        <button type="button" id="editBtn" onclick="toggleEdit()">
-            수정
-        </button>
-        <button type="button" id="saveBtn" onclick="saveDocument()" style="display: none;">
-            저장
-        </button>
-        <button type="button" id="cancelBtn" onclick="cancelEdit()" style="display: none;">
-            취소
-        </button>
-        <button type="button" onclick="deleteDocument()">
-            삭제
-        </button>
-        <a th:href="@{/documents/list(teamNo=${document.teamNo})}">
-            목록
-        </a>
-    </div>
-</div>
+    <script layout:fragment="script" th:inline="javascript">
 
-<script layout:fragment="script" th:inline="javascript">
+        const documentNo = /*[[${document.documentNo}]]*/ 0;
+        const teamNo = /*[[${document.teamNo}]]*/ 0;
+        const csrfToken = /*[[${_csrf.token}]]*/ '';
+        const csrfHeader = /*[[${_csrf.headerName}]]*/ '';
 
-    const documentNo = /*[[${document.documentNo}]]*/ 0;
-    const teamNo = /*[[${document.teamNo}]]*/ 0;
-    const csrfToken = /*[[${_csrf.token}]]*/ '';
-    const csrfHeader = /*[[${_csrf.headerName}]]*/ '';
+        let originalTitle = /*[[${document.title}]]*/ '';
+        let originalCategory = /*[[${document.category}]]*/ '';
 
-    let originalTitle = /*[[${document.title}]]*/ '';
-    let originalCategory = /*[[${document.category}]]*/ '';
+        // 수정 모드 전환
+        function toggleEdit() {
+            document.getElementById('titleText').style.display = 'none';
+            document.getElementById('titleInput').style.display = 'inline-block';
+            document.getElementById('categoryText').style.display = 'none';
+            document.getElementById('categoryInput').style.display = 'inline-block';
 
-    // 수정 모드 전환
-    function toggleEdit() {
-        document.getElementById('titleText').style.display = 'none';
-        document.getElementById('titleInput').style.display = 'inline-block';
-        document.getElementById('categoryText').style.display = 'none';
-        document.getElementById('categoryInput').style.display = 'inline-block';
-
-        document.getElementById('editBtn').style.display = 'none';
-        document.getElementById('saveBtn').style.display = 'inline-block';
-        document.getElementById('cancelBtn').style.display = 'inline-block';
-    }
-
-    // 수정 취소
-    function cancelEdit() {
-        document.getElementById('titleInput').value = originalTitle;
-        document.getElementById('categoryInput').value = originalCategory;
-
-        document.getElementById('titleText').style.display = 'inline';
-        document.getElementById('titleInput').style.display = 'none';
-        document.getElementById('categoryText').style.display = 'inline';
-        document.getElementById('categoryInput').style.display = 'none';
-
-        document.getElementById('editBtn').style.display = 'inline-block';
-        document.getElementById('saveBtn').style.display = 'none';
-        document.getElementById('cancelBtn').style.display = 'none';
-    }
-
-    // 문서 수정 저장
-    function saveDocument() {
-        const title = document.getElementById('titleInput').value.trim();
-        const category = document.getElementById('categoryInput').value;
-
-        if (!title) {
-            alert('제목을 입력해주세요.');
-            return false;
+            document.getElementById('editBtn').style.display = 'none';
+            document.getElementById('saveBtn').style.display = 'inline-block';
+            document.getElementById('cancelBtn').style.display = 'inline-block';
         }
 
-        fetch(`/documents/${documentNo}/update`, {
-            method: 'POST',
-            headers: {
-                'Content-Type': 'application/json',
-                [csrfHeader]: csrfToken
-            },
-            body: JSON.stringify({
-                title: title,
-                category: category
+        // 수정 취소
+        function cancelEdit() {
+            document.getElementById('titleInput').value = originalTitle;
+            document.getElementById('categoryInput').value = originalCategory;
+
+            document.getElementById('titleText').style.display = 'inline';
+            document.getElementById('titleInput').style.display = 'none';
+            document.getElementById('categoryText').style.display = 'inline';
+            document.getElementById('categoryInput').style.display = 'none';
+
+            document.getElementById('editBtn').style.display = 'inline-block';
+            document.getElementById('saveBtn').style.display = 'none';
+            document.getElementById('cancelBtn').style.display = 'none';
+        }
+
+        // 문서 수정 저장
+        function saveDocument() {
+            const title = document.getElementById('titleInput').value.trim();
+            const category = document.getElementById('categoryInput').value;
+
+            if (!title) {
+                alert('제목을 입력해주세요.');
+                return false;
+            }
+
+            fetch('/documents/' + documentNo + '/update', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                    [csrfHeader]: csrfToken
+                },
+                body: JSON.stringify({
+                    title: title,
+                    category: category
+                })
             })
-        })
-        .then(response => response.json())
-        .then(data => {
-            if (data.success) {
-                alert('수정되었습니다.');
-                location.reload();
-            } else {
-                alert(data.message || '수정에 실패했습니다.');
-            }
-        })
-        .catch(error => {
-            console.error('Error: ', error);
-            alert('수정 중 오류가 발생했습니다.');
-        });
-    }
-
-    // 문서 삭제
-    function deleteDocument() {
-
-        if (!confirm('정말 삭제하시겠습니까?')) {
-            return false;
+            .then(response => response.json())
+            .then(data => {
+                if (data.success) {
+                    alert('수정되었습니다.');
+                    location.reload();
+                } else {
+                    alert(data.message || '수정에 실패했습니다.');
+                }
+            })
+            .catch(error => {
+                console.error('Error: ', error);
+                alert('수정 중 오류가 발생했습니다.');
+            });
         }
 
-        fetch(`/documents/${documentNo}/delete`, {
-            method: 'POST',
-            headers: {
-                [csrfHeader]: csrfToken
-            }
-        })
-        .then(response => response.json())
-        .then(data => {
-            if (data.success) {
-                alert('문서가 삭제되었습니다.');
-                location.href = `/documents/list?teamNo=${teamNo}`;
-            } else {
-                alert(data.message || '삭제에 실패했습니다.');
-            }
-        })
-        .catch(error => {
-            console.error('Error: ', error);
-            alert('삭제 중 오류가 발생했습니다.');
-        });
-    }
-</script>
+        // 문서 삭제
+        function deleteDocument() {
 
+            if (!confirm('정말 삭제하시겠습니까?')) {
+                return false;
+            }
+
+            fetch('/documents/' + documentNo + '/delete', {
+                method: 'POST',
+                headers: {
+                    [csrfHeader]: csrfToken
+                }
+            })
+            .then(response => response.json())
+            .then(data => {
+                if (data.success) {
+                    alert('문서가 삭제되었습니다.');
+                    location.href = '/documents/list?teamNo=' + teamNo;
+                } else {
+                    alert(data.message || '삭제에 실패했습니다.');
+                }
+            })
+            .catch(error => {
+                console.error('Error: ', error);
+                alert('삭제 중 오류가 발생했습니다.');
+            });
+        }
+
+        // 재요약 함수 추가
+        function resummarize() {
+            if (!confirm('AI 요약을 다시 생성하시겠습니까?')) {
+                return;
+            }
+
+            fetch('/documents/' + documentNo + '/resummarize', {
+                method: 'POST',
+                headers: {
+                    [csrfHeader]: csrfToken
+                }
+            })
+            .then(response => response.json())
+            .then(data => {
+                if (data.success) {
+                    alert('AI 재요약을 시작했습니다. 잠시 후 새로고침해주세요.');
+                    setTimeout(() => {
+                        location.reload();
+                    }, 2000);
+                } else {
+                    alert(data.message || '재요약에 실패했습니다.');
+                }
+            })
+            .catch(error => {
+                console.error('Error: ', error);
+                alert('재요약 중 오류가 발생했습니다.');
+            });
+        }
+    </script>
+</div>
 </html>
