@@ -1,0 +1,158 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org"
+      xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
+      layout:decorate="~{layout/layout}">
+
+<div layout:fragment="content">
+   <h1>문서 상세</h1>
+
+    <div class="document-info">
+        <table>
+            <tr>
+                <th>제목</th>
+                <td>
+                    <span id="titleText" th:text="${document.title}"></span>
+                    <input type="text"
+                           id="titleInput"
+                           th:value="${document.title}"
+                           style="display: none"
+                           maxlength="200" />
+                </td>
+            </tr>
+            <tr>
+                <th>카테고리</th>
+                <td>
+                    <span id="categoryText" th:text="${document.categoryDescription}"></span>
+                    <select id="categoryInput" style="display: none;">
+                        <option th:each="cat : ${categories}"
+                                th:value="${cat}"
+                                th:text="${cat.description}"
+                                th:selected="${cat == document.category}"></option>
+                    </select>
+                </td>
+            </tr>
+            <tr>
+                <th>파일명</th>
+                <td th:text="${document.originalFileName}"></td>
+            </tr>
+            <tr>
+                <th>파일 크기</th>
+                <td th:text="${#numbers.formatDecimal(document.fileSize / 1024, 1, 2)} + ' KB'"></td>
+            </tr>
+            <tr>
+                <th>작성자</th>
+                <td th:text="${document.uploadUserName}"></td>
+            </tr>
+            <tr>
+                <th>팀</th>
+                <td th:text="${document.teamName}"></td>
+            </tr>
+            <tr>
+                <th>상태</th>
+                <td>
+                    <span th:text="${document.statusDescription}"
+                          th:classappend="${document.status.name() == 'COMPLETED' ? 'status-completed' :
+                                             (document.status.name() == 'PROCESSING' ? 'status-processing' : 'status-failed')}">
+                    </span>
+                </td>
+            </tr>
+            <tr>
+                <th>등록일</th>
+                <td th:text="${#temporals.format(document.createdAt, 'yyyy-MM-dd HH:mm:ss')}"></td>
+            </tr>
+            <tr>
+                <th>수정일</th>
+                <td th:text="${#temporals.format(document.updatedAt, 'yyyy-MM-dd HH:mm:ss')}"></td>
+            </tr>
+        </table>
+    </div>
+
+    <!-- AI 요약 결과 -->
+    <div th:if="${document.summaryText != null}">
+        <h2>AI 요약</h2>
+        <div>
+            <p th:text="${document.summaryText}"></p>
+            <div>
+                <small>
+                    AI 모델: <span th:text="${document.aiModelVersion}"></span> |
+                    생성일: <span th:text="${#temporals.format(document.summaryCreatedAt, 'yyyy-MM-dd HH:mm')}"></span>
+                </small>
+            </div>
+        </div>
+    </div>
+
+    <!-- 요약 진행 중 -->
+    <div th:if="${document.summaryText == null && document.status.name() == 'PROCESSING'}">
+        <h2>AI 요약</h2>
+        <div>
+            <p>AI 요약을 생성중입니다. 잠시만 기다려주세요 ...</p>
+        </div>
+    </div>
+
+    <!-- 요약 실패 -->
+    <div th:if="${document.summaryText == null && document.status.name() == 'FAILED'}">
+        <h2>AI 요약</h2>
+        <div>
+            <p>AI 요약 생성에 실패했습니다.</p>
+        </div>
+    </div>
+
+    <div>
+        <button type="button" id="editBtn" onclick="toggleEdit()">
+            수정
+        </button>
+        <button type="button" id="saveBtn" onclick="saveDocument()" style="display: none;">
+            저장
+        </button>
+        <button type="button" id="cancelBtn" onclick="cancelEdit()" style="display: none;">
+            취소
+        </button>
+        <button type="button" onclick="deleteDocument()">
+            삭제
+        </button>
+        <a th:href="@{/documents/list(teamNo=${document.teamNo})}">
+            목록
+        </a>
+    </div>
+</div>
+
+<script layout:fragment="script" th:inline="javascript">
+
+    const documentNo = /*[[${document.documentNo}]]*/ 0;
+    const teamNo = /*[[${document.teamNo}]]*/ 0;
+    const csrfToken = /*[[${_csrf.token}]]*/ '';
+    const csrfHeader = /*[[${_csrf.headerName}]]*/ '';
+
+    let originalTitle = /*[[${document.title}]]*/ '';
+    let originalCategory = /*[[${document.category}]]*/ '';
+
+    // 수정 모드 전환
+    function toggleEdit() {
+        document.getElementById('titleText').style.display = 'none';
+        document.getElementById('titleInput').style.display = 'inline-block';
+        document.getElementById('categoryText').style.display = 'none';
+        document.getElementById('categoryInput').style.display = 'inline-block';
+
+        document.getElementById('editBtn').style.display = 'none';
+        document.getElementById('saveBtn').style.display = 'inline-block';
+        document.getElementById('cancelBtn').style.display = 'inline-block';
+    }
+
+    // 수정 취소
+    function cancelEdit() {
+        document.getElementById('titleInput').value = originalTitle;
+        document.getElementById('categoryInput').value = originalCategory;
+
+        document.getElementById('titleText').style.display = 'inline';
+        document.getElementById('titleInput').style.display = 'none';
+        document.getElementById('categoryText').style.display = 'inline';
+        document.getElementById('categoryInput').style.display = 'none';
+
+        document.getElementById('editBtn').style.display = 'inline-block';
+        document.getElementById('saveBtn').style.display = 'none';
+        document.getElementById('cancelBtn').style.display = 'none';
+    }
+
+</script>
+
+</html>

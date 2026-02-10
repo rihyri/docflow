@@ -1,6 +1,7 @@
 package com.dockflow.backend.controller.document;
 
 import com.dockflow.backend.dto.document.DocumentCreateRequest;
+import com.dockflow.backend.dto.document.DocumentDetailResponse;
 import com.dockflow.backend.dto.document.DocumentResponse;
 import com.dockflow.backend.entity.document.Document;
 import com.dockflow.backend.service.document.DocumentService;
@@ -17,6 +18,8 @@ import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
+
+import java.util.Arrays;
 
 @Controller
 @RequestMapping("/documents")
@@ -73,5 +76,21 @@ public class DocumentController {
         model.addAttribute("teamNo", teamNo);
 
         return "document/list";
+    }
+
+    /* 문서 상세페이지 */
+    @GetMapping("/{documentNo}")
+    public String documentDetail (
+            @PathVariable("documentNo") Long documentNo,
+            @AuthenticationPrincipal UserDetails userDetails,
+            Model model
+    ) {
+
+        DocumentDetailResponse document = documentService.getDocumentDetail(documentNo, userDetails.getUsername());
+
+        model.addAttribute("document", document);
+        model.addAttribute("categories", Document.DocumentCategory.values());
+        
+        return "document/detail";
     }
 }

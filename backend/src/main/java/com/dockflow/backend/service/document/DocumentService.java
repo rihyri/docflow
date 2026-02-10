@@ -1,8 +1,10 @@
 package com.dockflow.backend.service.document;
 
 import com.dockflow.backend.dto.document.DocumentCreateRequest;
+import com.dockflow.backend.dto.document.DocumentDetailResponse;
 import com.dockflow.backend.dto.document.DocumentResponse;
 import com.dockflow.backend.entity.document.Document;
+import com.dockflow.backend.entity.document.DocumentSummary;
 import com.dockflow.backend.entity.member.Member;
 import com.dockflow.backend.entity.team.Team;
 import com.dockflow.backend.entity.team.TeamMember;
@@ -97,5 +99,23 @@ public class DocumentService {
         Page<Document> documentPage = documentRepository.findByTeamTeamNoAndIsActiveTrueOrderByCreatedAtDesc(teamNo, pageable);
 
         return documentPage.map(DocumentResponse::from);
+    }
+
+    /* 문서 상세 조회 */
+    public DocumentDetailResponse getDocumentDetail(Long documentNo, String memberId) {
+
+        // 1. 회원 조회
+        Member member = memberRepository.findByMemberId(memberId).orElseThrow(() -> new IllegalArgumentException("존재하지 않는 사용자입니다."));
+
+        // 2. 문서 조회
+        Document document = documentRepository.findByDocumentNoAndIsActiveTrue(documentNo).orElseThrow(() -> new IllegalArgumentException("존재하지 않는 문서입니다."));
+
+        // 3. 팀 멤버 권한 확인
+        teamMemberRepository.findByTeamAndMember(document.getTeam(), member).orElseThrow(() -> new IllegalArgumentException("팀 멤버만 문서를 조회할 수 있습니다."));
+
+        // 4. 요약 조회 (존재시)
+        DocumentSummary summary = documentSummaryRepository.findByDocumentDocumentNo(documentNo).orElse(null);
+
+        return DocumentDetailResponse.from(document, summary);
     }
 }
