@@ -3,6 +3,7 @@ package com.dockflow.backend.service.document;
 import com.dockflow.backend.dto.document.DocumentCreateRequest;
 import com.dockflow.backend.dto.document.DocumentDetailResponse;
 import com.dockflow.backend.dto.document.DocumentResponse;
+import com.dockflow.backend.dto.document.DocumentUpdateRequest;
 import com.dockflow.backend.entity.document.Document;
 import com.dockflow.backend.entity.document.DocumentSummary;
 import com.dockflow.backend.entity.member.Member;
@@ -117,5 +118,59 @@ public class DocumentService {
         DocumentSummary summary = documentSummaryRepository.findByDocumentDocumentNo(documentNo).orElse(null);
 
         return DocumentDetailResponse.from(document, summary);
+    }
+
+    /* 문서 정보 수정 */
+    @Transactional
+    public DocumentResponse updateDocument(Long documentNo, DocumentUpdateRequest request, String memberId) {
+
+        // 1. 회원 조회
+        Member member = memberRepository.findByMemberId(memberId).orElseThrow(() -> new IllegalArgumentException("존재하지 않는 사용자입니다."));
+
+        // 2. 문서 조회
+        Document document = documentRepository.findByDocumentNoAndIsActiveTrue(documentNo).orElseThrow(() -> new IllegalArgumentException("존재하지 않는 문서입니다."));
+
+        // 3. 권한 확인 (OWNER, ADMIN, 작성자만 수정 가능)
+        TeamMember teamMember = teamMemberRepository.findByTeamAndMember(document.getTeam(), member).orElseThrow(() -> new IllegalArgumentException("팀 멤버만 문서를 수정할 수 있습니다."));
+
+        boolean isOwnerOrAdmin = teamMember.getRole() == TeamMember.TeamRole.OWNER || teamMember.getRole() == TeamMember.TeamRole.ADMIN;
+        boolean isAuthor = document.getUploadUser().getMemberNo().equals(member.getMemberNo());
+
+        if (!isOwnerOrAdmin && !isAuthor) {
+            throw new IllegalArgumentException("문서 수정 권한이 없습니다.");
+        }
+
+        // 4. 문서 정보 업데이트
+        document.updateDocumentInfo(request.getTitle(), request.getCategory());
+
+        log.info("문서 수정 완료: documentNo{}, title={}", documentNo, request.getTitle());
+
+        return DocumentResponse.from(document);
+    }
+
+    /* 문서 삭제 (비활성화) */
+    @Transactional
+    public void deleteDocument(Long documentNo, String memberId) {
+
+        // 1. 회원 조회
+        Member member = memberRepository.findByMemberId(memberId).orElseThrow(() -> new IllegalArgumentException("존재하지 않는 사용자입니다."));
+
+        // 2. 문서 조회
+        Document document = documentRepository.findByDocumentNoAndIsActiveTrue(documentNo).orElseThrow(() -> new IllegalArgumentException("존재하지 않는 문서입니다."));
+
+        // 3. 권한 확인 (OWNER, ADMIN, 작성자만 삭제 가능)
+        TeamMember teamMember = teamMemberRepository.findByTeamAndMember(document.getTeam(), member).orElseThrow(() -> new IllegalArgumentException("팀 멤버만 문서를 삭제할 수 있습니다."));
+
+        boolean isOwnerOrAdmin = teamMember.getRole() == TeamMember.TeamRole.OWNER || teamMember.getRole() == TeamMember.TeamRole.ADMIN;
+        boolean isAuthor = document.getUploadUser().getMemberNo().equals(member.getMemberNo());
+
+        if (!isOwnerOrAdmin && !isAuthor) {
+            throw new IllegalArgumentException("문서 삭제 권한이 없습니다.");
+        }
+
+        // 4. 문서 비활성화
+        document.deactivate();
+
+        log.info("문서 삭제 완료: documentNo = {}, title = {}", documentNo, document.getTitle());
     }
 }

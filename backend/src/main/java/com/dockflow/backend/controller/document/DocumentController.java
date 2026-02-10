@@ -3,7 +3,9 @@ package com.dockflow.backend.controller.document;
 import com.dockflow.backend.dto.document.DocumentCreateRequest;
 import com.dockflow.backend.dto.document.DocumentDetailResponse;
 import com.dockflow.backend.dto.document.DocumentResponse;
+import com.dockflow.backend.dto.document.DocumentUpdateRequest;
 import com.dockflow.backend.entity.document.Document;
+import com.dockflow.backend.response.ApiResponse;
 import com.dockflow.backend.service.document.DocumentService;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
@@ -90,7 +92,41 @@ public class DocumentController {
 
         model.addAttribute("document", document);
         model.addAttribute("categories", Document.DocumentCategory.values());
-        
+
         return "document/detail";
+    }
+
+    /* 문서 수정 */
+    @PostMapping("/{documentNo}/update")
+    @ResponseBody
+    public ApiResponse<DocumentResponse> updateDocument(
+            @PathVariable("documentNo") Long documentNo,
+            @Valid @RequestBody DocumentUpdateRequest request,
+            @AuthenticationPrincipal UserDetails userDetails
+    ) {
+
+        try {
+            DocumentResponse response = documentService.updateDocument(documentNo, request, userDetails.getUsername());
+            return ApiResponse.success(response);
+        } catch (IllegalArgumentException e) {
+            return ApiResponse.error(e.getMessage());
+        }
+    }
+
+    /* 문서 삭제 (비활성화) */
+    @PostMapping("/{documentNo}/delete")
+    @ResponseBody
+    public ApiResponse<Void> deleteDocument(
+            @PathVariable("documentNo") Long documentNo,
+            @AuthenticationPrincipal UserDetails userDetails
+    ) {
+
+        try {
+            documentService.deleteDocument(documentNo, userDetails.getUsername());
+            return ApiResponse.success(null);
+        } catch (IllegalArgumentException e) {
+            return ApiResponse.error(e.getMessage());
+        }
+
     }
 }

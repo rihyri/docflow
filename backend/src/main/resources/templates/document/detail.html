@@ -153,6 +153,69 @@
         document.getElementById('cancelBtn').style.display = 'none';
     }
 
+    // 문서 수정 저장
+    function saveDocument() {
+        const title = document.getElementById('titleInput').value.trim();
+        const category = document.getElementById('categoryInput').value;
+
+        if (!title) {
+            alert('제목을 입력해주세요.');
+            return false;
+        }
+
+        fetch(`/documents/${documentNo}/update`, {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+                [csrfHeader]: csrfToken
+            },
+            body: JSON.stringify({
+                title: title,
+                category: category
+            })
+        })
+        .then(response => response.json())
+        .then(data => {
+            if (data.success) {
+                alert('수정되었습니다.');
+                location.reload();
+            } else {
+                alert(data.message || '수정에 실패했습니다.');
+            }
+        })
+        .catch(error => {
+            console.error('Error: ', error);
+            alert('수정 중 오류가 발생했습니다.');
+        });
+    }
+
+    // 문서 삭제
+    function deleteDocument() {
+
+        if (!confirm('정말 삭제하시겠습니까?')) {
+            return false;
+        }
+
+        fetch(`/documents/${documentNo}/delete`, {
+            method: 'POST',
+            headers: {
+                [csrfHeader]: csrfToken
+            }
+        })
+        .then(response => response.json())
+        .then(data => {
+            if (data.success) {
+                alert('문서가 삭제되었습니다.');
+                location.href = `/documents/list?teamNo=${teamNo}`;
+            } else {
+                alert(data.message || '삭제에 실패했습니다.');
+            }
+        })
+        .catch(error => {
+            console.error('Error: ', error);
+            alert('삭제 중 오류가 발생했습니다.');
+        });
+    }
 </script>
 
 </html>
