@@ -115,6 +115,18 @@
             생성일: <span th:text="${#temporals.format(document.summaryCreatedAt, 'yyyy-MM-dd HH:mm')}"></span>
             요약 횟수: <span th:text="${document.summaryCount}"></span>
         </div>
+
+        <!-- 관련 문서 추천 -->
+        <div th:if="${relatedDocuments != null && !relatedDocuments.isEmpty()}">
+            <h2>관련 문서 추천</h2>
+            <ul>
+                <li th:each="related : ${relatedDocuments}">
+                    <a th:href="@{/documents/{docNo}(docNo=${related.documentNo})}" th:text="${related.title}"></a>
+                    <span th:text="'[' + ${related.categoryDescription} + ']'"></span>
+                    <span th:text="'(매칭 태그: ' + ${related.matchingTagCount} + '개)'"></span>
+                </li>
+            </ul>
+        </div>
     </div>
 
     <!-- 요약 진행 중 -->

@@ -21,6 +21,7 @@ import org.springframework.web.multipart.MultipartFile;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
 import java.util.Arrays;
+import java.util.List;
 
 @Controller
 @RequestMapping("/documents")
@@ -92,8 +93,12 @@ public class DocumentController {
 
         DocumentDetailDTO document = documentService.getDocumentDetail(documentNo, userDetails.getUsername());
 
+        // 관련 문서 추천
+        List<RelatedDocumentDTO> relatedDocuments = documentService.getRelatedDocuments(documentNo, 5);
+
         model.addAttribute("document", document);
         model.addAttribute("categories", Document.DocumentCategory.values());
+        model.addAttribute("relatedDocuments", relatedDocuments);
 
         return "document/detail";
     }

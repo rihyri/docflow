@@ -17,6 +17,7 @@ import com.dockflow.backend.service.file.FileStorageService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -206,5 +207,45 @@ public class DocumentService {
         document.deactivate();
 
         log.info("문서 삭제 완료: documentNo = {}, title = {}", documentNo, document.getTitle());
+    }
+
+    /* 관련 문서 추천 (같은 팀, 같은 태그 기반) */
+    public List<RelatedDocumentDTO> getRelatedDocuments(Long documentNo, int limit) {
+
+        // 1. 현재 문서 조회
+        Document document = documentRepository.findByDocumentNoAndIsActiveTrue(documentNo).orElseThrow(() -> new IllegalArgumentException("존재하지 않는 문서입니다."));
+
+        // 2. 현재 문서의 태그 목록 가져오기
+        List<String> tagNames = tagRepository.findByDocument(document)
+                .stream()
+                .map(DocumentTag::getTagName)
+                .toList();
+
+        // 태그가 없으면 빈 리스트 반환
+        if (tagNames.isEmpty()) {
+            return List.of();
+        }
+
+        // 3. 같은 팀에서 같은 태그를 가진 문서 찾기
+        List<Object[]> results = tagRepository.findRelatedDocumentsByTagsAndTeam(
+                tagNames,
+                document.getTeam(),
+                documentNo,
+                PageRequest.of(0, limit)
+        );
+
+        return results.stream()
+                .map(result -> {
+                    Document relatedDoc = (Document) result[0];
+                    Long matchCount = (Long) result[1];
+
+                    return RelatedDocumentDTO.builder()
+                            .documentNo(relatedDoc.getDocumentNo())
+                            .title(relatedDoc.getTitle())
+                            .categoryDescription(relatedDoc.getCategory().getDescription())
+                            .matchingTagCount(matchCount.intValue())
+                            .build();
+                })
+                .toList();
     }
 }
