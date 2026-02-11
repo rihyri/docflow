@@ -4,8 +4,10 @@ import com.dockflow.backend.dto.document.*;
 import com.dockflow.backend.entity.document.Document;
 import com.dockflow.backend.response.ApiResponse;
 import com.dockflow.backend.service.document.DocumentService;
+import com.dockflow.backend.service.document.DocumentSummaryService;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
@@ -23,9 +25,12 @@ import java.util.Arrays;
 @Controller
 @RequestMapping("/documents")
 @RequiredArgsConstructor
+@Slf4j
 public class DocumentController {
 
     private final DocumentService documentService;
+    private final DocumentSummaryService documentSummaryService;
+
 
     /* 문서 업로드 페이지 */
     @GetMapping("/upload")
@@ -126,4 +131,33 @@ public class DocumentController {
         }
 
     }
+
+    /* 수동 재요약 */
+    @PostMapping("/resummarize")
+    @ResponseBody
+    public ResummarizeResponse resummarize(@RequestParam(value = "documentNo") Long documentNo) {
+
+        try {
+            // 재요약 가능 여부 체크
+            if (!documentSummaryService.canResummarize(documentNo)) {
+                return new ResummarizeResponse(false, "이번 달 재요약 횟수를 모두 사용했습니다. (월 3회 제한)", 0);
+            }
+
+            documentSummaryService.resummarizeDocument(documentNo);
+
+            // 남은 횟수
+            int remaining = documentSummaryService.getRemainingResummaryCount(documentNo);
+
+            return new ResummarizeResponse(true, "재요약이 완료되었습니다. 남은 횟수: ", remaining);
+
+        } catch (IllegalArgumentException e) {
+            return new ResummarizeResponse(false, e.getMessage(), 0);
+        } catch (Exception e) {
+            log.error("재요약 실패", e);
+            return new ResummarizeResponse(false, "재요약에 실패했습니다. : " + e.getMessage(), 0);
+        }
+    }
+
+    /* 재요약 응답 DTO */
+    record ResummarizeResponse(boolean success, String message, int remainingCount) {}
 }

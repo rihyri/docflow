@@ -114,6 +114,8 @@ public class DocumentSummaryService {
 
             // 4. 기존 태그 삭제 후 새 태그 저장
             tagRepository.deleteByDocument(document);
+            tagRepository.flush();
+
             for (String tagName : result.tags()) {
                 DocumentTag tag = DocumentTag.builder()
                         .document(document)

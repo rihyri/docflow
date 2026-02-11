@@ -240,11 +240,16 @@
                 return;
             }
 
-            fetch('/documents/' + documentNo + '/resummarize', {
+            const formData = new FormData();
+            formData.append('documentNo', documentNo);
+            formData.append('_csrf', csrfToken);
+
+            fetch('/documents/resummarize', {
                 method: 'POST',
                 headers: {
                     [csrfHeader]: csrfToken
-                }
+                },
+                body: formData
             })
             .then(response => response.json())
             .then(data => {
