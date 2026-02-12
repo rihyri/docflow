@@ -1,10 +1,12 @@
 package com.dockflow.backend.controller.document;
 
 import com.dockflow.backend.dto.document.*;
+import com.dockflow.backend.dto.document.comment.DocumentCommentDTO;
 import com.dockflow.backend.entity.document.Document;
 import com.dockflow.backend.response.ApiResponse;
 import com.dockflow.backend.service.document.DocumentService;
 import com.dockflow.backend.service.document.DocumentSummaryService;
+import com.dockflow.backend.service.document.comment.DocumentCommentService;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -12,6 +14,8 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.stereotype.Controller;
@@ -22,6 +26,7 @@ import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
 import java.util.Arrays;
 import java.util.List;
+import java.util.Map;
 
 @Controller
 @RequestMapping("/documents")
@@ -31,6 +36,7 @@ public class DocumentController {
 
     private final DocumentService documentService;
     private final DocumentSummaryService documentSummaryService;
+    private final DocumentCommentService documentCommentService;
 
 
     /* 문서 업로드 페이지 */
@@ -96,9 +102,12 @@ public class DocumentController {
         // 관련 문서 추천
         List<RelatedDocumentDTO> relatedDocuments = documentService.getRelatedDocuments(documentNo, 5);
 
+        List<DocumentCommentDTO> comments = documentCommentService.getCommentsByDocumentNo(documentNo);
+
         model.addAttribute("document", document);
         model.addAttribute("categories", Document.DocumentCategory.values());
         model.addAttribute("relatedDocuments", relatedDocuments);
+        model.addAttribute("comments", comments);
 
         return "document/detail";
     }
@@ -165,4 +174,75 @@ public class DocumentController {
 
     /* 재요약 응답 DTO */
     record ResummarizeResponse(boolean success, String message, int remainingCount) {}
+
+    /* 댓글 작성 */
+    @PostMapping("/{documentNo}/comment")
+    @ResponseBody
+    public ResponseEntity<ApiResponse<DocumentCommentDTO>> createComment (
+            @PathVariable("documentNo") Long documentNo,
+            @RequestBody Map<String, String> request
+    ) {
+        try {
+            String content = request.get("content");
+
+            if (content == null || content.trim().isEmpty()) {
+                return ResponseEntity.badRequest()
+                        .body(ApiResponse.error("댓글 내용을 입력해주세요."));
+            }
+
+            DocumentCommentDTO comment = documentCommentService.createComment(documentNo, content);
+            return ResponseEntity.ok(ApiResponse.success(comment));
+        } catch (IllegalArgumentException e) {
+            return ResponseEntity.badRequest()
+                    .body(ApiResponse.error(e.getMessage()));
+        } catch (Exception e) {
+            return ResponseEntity.internalServerError()
+                    .body(ApiResponse.error("댓글 작성에 실패했습니다."));
+        }
+    }
+
+    /* 댓글 수정 */
+    @PutMapping("/comment/{commentNo}")
+    @ResponseBody
+    public ResponseEntity<ApiResponse<DocumentCommentDTO>> updateComment(
+            @PathVariable("commentNo") Long commentNo,
+            @RequestBody Map<String, String> request
+    ) {
+        try {
+            String content = request.get("content");
+
+            if (content == null || content.trim().isEmpty()) {
+                return ResponseEntity.badRequest()
+                        .body(ApiResponse.error("댓글 내용을 입력해주세요."));
+            }
+
+            DocumentCommentDTO comment = documentCommentService.updateComment(commentNo, content);
+            return ResponseEntity.ok(ApiResponse.success(comment));
+
+        } catch (IllegalArgumentException e) {
+            return ResponseEntity.badRequest()
+                    .body(ApiResponse.error(e.getMessage()));
+        } catch (Exception e) {
+            return ResponseEntity.internalServerError()
+                    .body(ApiResponse.error("댓글 수정에 실패했습니다."));
+        }
+    }
+
+    /* 댓글 삭제 */
+    @DeleteMapping("/comment/{commentNo}")
+    @ResponseBody
+    public ResponseEntity<ApiResponse<Void>> deleteComment(
+            @PathVariable("commentNo") Long commentNo
+    ) {
+        try {
+            documentCommentService.deleteComment(commentNo);
+            return ResponseEntity.ok(ApiResponse.success("댓글이 삭제되었습니다.", null));
+        } catch (IllegalArgumentException e) {
+            return ResponseEntity.badRequest()
+                    .body(ApiResponse.error(e.getMessage()));
+        } catch (Exception e) {
+            return ResponseEntity.internalServerError()
+                    .body(ApiResponse.error("댓글 삭제에 실패했습니다."));
+        }
+    }
 }
