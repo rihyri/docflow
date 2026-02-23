@@ -11,6 +11,39 @@
             <p th:text="${message}"></p>
         </div>
 
+        <!-- 검색 폼 -->
+        <form th:action="@{/documents/list}" method="get">
+            <input type="hidden" name="teamNo" th:value="${teamNo}" />
+            <input type="hidden" name="size" th:value="${page.size}" />
+
+            <!-- 카테고리 select -->
+            <select name="category">
+                <option value="">전체 카테고리</option>
+                <option value="MEETING" th:selected="${selectedCategory == 'MEETING'}">회의록</option>
+                <option value="PLAN" th:selected="${selectedCategory == 'PLAN'}">기획서</option>
+                <option value="REPORT" th:selected="${selectedCategory == 'REPORT'}">보고서</option>
+                <option value="ETC" th:selected="${selectedCategory == 'ETC'}">기타</option>
+            </select>
+
+            <!-- 검색 컬럼 select -->
+            <select name="searchType">
+                <option value="title" th:selected="${selectedSearchType == 'title'}">제목</option>
+                <option value="originalFileName" th:selected="${selectedSearchType == 'originalFileName'}">파일명</option>
+                <option value="uploadUserName" th:selected="${selectedSearchType == 'uploadUserName'}">작성자</option>
+            </select>
+
+            <!-- 검색어 input -->
+            <input type="text" name="searchKeyword" th:value="${searchKeyword}" placeholder="검색어를 입력하세요." />
+
+            <!-- 날짜 범위 -->
+            <input type="date" name="startDate" th:value="${startDate}" />
+            <span>~</span>
+            <input type="date" name="endDate" th:value="${endDate}" />
+
+            <button type="submit">검색</button>
+            <a th:href="@{/documents/list(teamNo=${teamNo})}">초기화</a>
+        </form>
+
         <div>
             <a th:href="@{/documents/upload(teamNo=${teamNo})}">
                 문서 업로드
@@ -61,20 +94,26 @@
         <!-- 페이징 -->
         <div class="pagination" th:if="${page.totalPages > 0}">
             <a th:if="${page.number > 0}"
-               th:href="@{/documents/list(teamNo=${teamNo}, page=${page.number - 1}, size=${page.size}}"
-            >이전</a>
+               th:href="@{/documents/list(teamNo=${teamNo}, page=${page.number - 1}, size=${page.size},
+                           category=${selectedCategory}, searchType=${selectedSearchType},
+                           searchKeyword=${searchKeyword}, startDate=${startDate}, endDate=${endDate})}">
+                이전
+            </a>
+
+            <span th:each="i : ${#numbers.sequence(0, page.totalPages - 1)}">
+                <a th:href="@{/documents/list(teamNo=${teamNo}, page=${i}, size=${page.size},
+                               category=${selectedCategory}, searchType=${selectedSearchType},
+                               searchKeyword=${searchKeyword}, startDate=${startDate}, endDate=${endDate})}"
+                   th:text="${i + 1}"
+                   th:classappend="${i == page.number} ? 'active'"
+                   class="page-link"></a>
+            </span>
+
+            <a th:if="${page.number < page.totalPages - 1}"
+               th:href="@{/documents/list(teamNo=${teamNo}, page=${page.number + 1}, size=${page.size},
+                           category=${selectedCategory}, searchType=${selectedSearchType},
+                           searchKeyword=${searchKeyword}, startDate=${startDate}, endDate=${endDate})}"
+               class="page-link">다음</a>
         </div>
-
-        <span th:each="i : ${#numbers.sequence(0, page.totalPages - 1)}">
-            <a th:if="${i == page.number}"
-               th:text="${i + 1}"
-               class="page-link active"></a>
-        </span>
-
-        <a th:if="${page.number < page.totalPages - 1}"
-           th:href="@{/documents/list(teamNo=${teamNo}, page=${page.number + 1}, size=${page.size})}"
-           class="page-link">다음</a>
-
-    </div>
 </div>
 </html>

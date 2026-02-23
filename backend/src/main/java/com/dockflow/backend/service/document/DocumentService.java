@@ -23,6 +23,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.multipart.MultipartFile;
 
+import java.time.LocalDateTime;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -106,6 +107,24 @@ public class DocumentService {
 
         // 4. 문서 목록 조회
         Page<Document> documentPage = documentRepository.findByTeamTeamNoAndIsActiveTrueOrderByCreatedAtDesc(teamNo, pageable);
+
+        return documentPage.map(DocumentResponse::from);
+    }
+
+    /* 팀별 문서 목록 검색 */
+    public Page<DocumentResponse> searchTeamDocuments(
+            Long teamNo, String memberId, Document.DocumentCategory category,
+            String searchType, String searchKeyword,
+            LocalDateTime startDate, LocalDateTime endDate,
+            Pageable pageable) {
+
+        Member member = memberRepository.findByMemberId(memberId).orElseThrow(() -> new IllegalArgumentException("존재하지 않는 사용자입니다."));
+
+        Team team = teamRepository.findById(teamNo).orElseThrow(() -> new IllegalArgumentException("존재하지 않는 팀입니다."));
+
+        teamMemberRepository.findByTeamAndMember(team, member).orElseThrow(() -> new IllegalArgumentException("팀 멤버만 문서를 조회할 수 있습니다."));
+
+        Page<Document> documentPage = documentRepository.searchDocuments(teamNo, category, searchType, searchKeyword, startDate, endDate, pageable);
 
         return documentPage.map(DocumentResponse::from);
     }

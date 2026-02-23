@@ -24,6 +24,9 @@ import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
+import java.time.LocalDate;
+import java.time.LocalDateTime;
+import java.time.format.DateTimeFormatter;
 import java.util.Arrays;
 import java.util.List;
 import java.util.Map;
@@ -76,15 +79,48 @@ public class DocumentController {
             @RequestParam(value = "teamNo") Long teamNo,
             @RequestParam(value = "page", defaultValue = "0") int page,
             @RequestParam(value = "size", defaultValue = "10") int size,
+            @RequestParam(value = "category", required = false) String categoryStr,
+            @RequestParam(value = "searchType", required = false) String searchType,
+            @RequestParam(value = "searchKeyword", required = false) String searchKeyword,
+            @RequestParam(value = "startDate", required = false) String startDateStr,
+            @RequestParam(value = "endDate", required = false) String endDateStr,
             @AuthenticationPrincipal UserDetails userDetails,
             Model model) {
 
+        // 카테고리 변환
+        Document.DocumentCategory category = null;
+        if (categoryStr != null && !categoryStr.isEmpty()) {
+            try {
+                category = Document.DocumentCategory.valueOf(categoryStr);
+            } catch (IllegalArgumentException ignored) {}
+        }
+
+        // 날짜 변환
+        LocalDateTime startDate = null;
+        LocalDateTime endDate = null;
+        DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd");
+        if (startDateStr != null && !startDateStr.isEmpty()) {
+            startDate = LocalDate.parse(startDateStr, formatter).atStartOfDay();
+        }
+        if (endDateStr != null && !endDateStr.isEmpty()) {
+            endDate = LocalDate.parse(endDateStr, formatter).atTime(23, 59, 59);
+        }
+
         Pageable pageable = PageRequest.of(page, size, Sort.by("createdAt").descending());
-        Page<DocumentResponse> documentPage = documentService.getTeamDocuments(teamNo, userDetails.getUsername(), pageable);
+        Page<DocumentResponse> documentPage = documentService.searchTeamDocuments(
+                teamNo, userDetails.getUsername(),
+                category, searchType, searchKeyword,
+                startDate, endDate, pageable);
 
         model.addAttribute("documents", documentPage.getContent());
         model.addAttribute("page", documentPage);
         model.addAttribute("teamNo", teamNo);
+
+        model.addAttribute("selectedCategory", categoryStr);
+        model.addAttribute("selectedSearchType", searchType);
+        model.addAttribute("searchKeyword", searchKeyword);
+        model.addAttribute("startDate", startDate);
+        model.addAttribute("endDate", endDateStr);
 
         return "document/list";
     }
