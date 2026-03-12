@@ -96,6 +96,9 @@ public class TeamController {
     public String teamDetail(@PathVariable("teamNo") Long teamNo, @AuthenticationPrincipal UserDetails userDetails, Model model) {
         TeamDetailResponse team = teamService.getTeamDetail(teamNo, userDetails.getUsername());
         model.addAttribute("team", team);
+
+        System.out.println("team 확인: " + team);
+
         return "team/detail";
     }
 

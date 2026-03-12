@@ -51,6 +51,35 @@
             <button th:if="${team.myRole.name() == 'OWNER' or team.myRole.name() == 'ADMIN'}" onclick="showInviteModal()">
                 멤버 초대
             </button>
+
+            <table th:if="${not #lists.isEmpty(team.members)}">
+                <thead>
+                    <tr>
+                        <th>이름</th>
+                        <th>이메일</th>
+                        <th>역할</th>
+                        <th>가입일</th>
+                        <th th:if="${team.myRole.name() == 'OWNER' or team.myRole.name() == 'ADMIN'}">관리</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr th:each="member : ${team.members}">
+                        <td th:text="${member.memberName}"></td>
+                        <td th:text="${member.email}"></td>
+                        <td th:text="${member.role}"></td>
+                        <td th:text="${#temporals.format(member.joinedAt, 'yyyy-MM-dd')}"></td>
+                        <td th:if="${team.myRole.name() == 'OWNER' or team.myRole.name() == 'ADMIN'}">
+                            <button th:onclick="'changeRole(' + ${member.memberNo} + ')'">
+                                역할 변경
+                            </button>
+                        </td>
+                    </tr>
+                </tbody>
+            </table>
+
+            <div th:if="${#lists.isEmpty(team.members)}">
+                팀 멤버가 없습니다.
+            </div>
         </div>
     </div>
 
@@ -267,7 +296,11 @@
                 alert('오류가 발생하였습니다.: ' + error);
             });
         }
+    }
 
+    // 팀 역할 변경
+    function changeRole(memberNo) {
+        alert('test');
     }
 
 </script>
