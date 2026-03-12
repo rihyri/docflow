@@ -35,9 +35,9 @@
                     생성일: <span th:text="${#temporals.format(team.createdAt, 'yyyy-MM-dd HH:mm')}">날짜</span>
                 </div>
 
-                <div th:if="${isAllTeamsView and !team.joined}">
+                <!--<div th:if="${isAllTeamsView and !team.joined}">
                     <a th:href="@{/teams/{id}/join-request(id=${team.teamNo})}">가입 요청</a>
-                </div>
+                </div>-->
             </div>
 
             <!-- pagination -->
