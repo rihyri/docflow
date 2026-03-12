@@ -1,5 +1,6 @@
 package com.dockflow.backend.controller.team;
 
+import com.dockflow.backend.dto.member.MemberRoleChangeRequest;
 import com.dockflow.backend.dto.team.*;
 import com.dockflow.backend.response.ApiResponse;
 import com.dockflow.backend.service.team.TeamService;
@@ -177,4 +178,25 @@ public class TeamController {
         }
     }
 
+    /* 회원 역할 변경 */
+    @PostMapping("/{teamNo}/members/{memberNo}/role")
+    @ResponseBody
+    public ApiResponse<Void> changeRole(
+            @PathVariable("teamNo") Long teamNo,
+            @PathVariable("memberNo") Long memberNo,
+            @Valid @RequestBody MemberRoleChangeRequest request,
+            BindingResult bindingResult,
+            @AuthenticationPrincipal UserDetails userDetails
+    ) {
+        if (bindingResult.hasErrors()) {
+            return ApiResponse.error(bindingResult.getAllErrors().get(0).getDefaultMessage());
+        }
+
+        try {
+            teamService.changeTeamMemberRole(teamNo, memberNo, userDetails.getUsername(), request);
+            return ApiResponse.success(null);
+        } catch (IllegalArgumentException e) {
+            return ApiResponse.error(e.getMessage());
+        }
+    }
 }

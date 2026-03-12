@@ -30,4 +30,7 @@ public interface TeamMemberRepository extends JpaRepository<TeamMember, Long> {
 
     // 팀 탈퇴
     void deleteByTeamAndMember(Team team, Member member);
+
+    // teamMemberNo로 직접 조회
+    Optional<TeamMember> findByTeamMemberNoAndTeam(Long teamMemberNo,Team team);
 }

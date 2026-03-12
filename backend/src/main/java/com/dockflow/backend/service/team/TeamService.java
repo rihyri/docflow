@@ -1,5 +1,6 @@
 package com.dockflow.backend.service.team;
 
+import com.dockflow.backend.dto.member.MemberRoleChangeRequest;
 import com.dockflow.backend.dto.team.*;
 import com.dockflow.backend.entity.member.Member;
 import com.dockflow.backend.entity.team.Team;
@@ -223,5 +224,34 @@ public class TeamService {
         }
 
         teamMemberRepository.deleteByTeamAndMember(team, member);
+    }
+
+    /* 팀원 역할 변경 */
+    @Transactional
+    public void changeTeamMemberRole(Long teamNo, Long targetMemberNo, String requesterMemberId, MemberRoleChangeRequest request) {
+
+        Team team = teamRepository.findById(teamNo).orElseThrow(() -> new IllegalArgumentException("존재하지 않는 팀입니다."));
+
+        // 요청자 권한 확인 (ADMIN 이상만)
+        Member requester = memberRepository.findByMemberId(requesterMemberId).orElseThrow(() -> new IllegalArgumentException("존재하지 않는 회원입니다."));
+
+        TeamMember requesterTeamMember = teamMemberRepository.findByTeamAndMember(team, requester).orElseThrow(() -> new IllegalArgumentException("팀 멤버가 아닙니다."));
+
+        if (!requesterTeamMember.hasPermission(TeamMember.TeamRole.ADMIN
+        )) {
+            throw new IllegalArgumentException("역할을 변경할 권한이 없습니다.");
+        }
+
+        // 대상 멤버 조회
+        Member targetMember = memberRepository.findById(targetMemberNo).orElseThrow(() -> new IllegalArgumentException("존재하지 않는 회원입니다."));
+
+        TeamMember targetTeamMember = teamMemberRepository.findByTeamAndMember(team, targetMember).orElseThrow(() -> new IllegalArgumentException("팀 멤버가 아닙니다."));
+
+        // OWNER 는 변경 불가
+        if (targetTeamMember.getRole() == TeamMember.TeamRole.OWNER) {
+            throw new IllegalArgumentException("OWNER의 역할은 변경할 수 없습니다.");
+        }
+
+        targetTeamMember.updateRole(request.getRole());
     }
 }
