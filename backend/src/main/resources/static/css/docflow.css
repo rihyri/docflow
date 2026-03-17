@@ -1121,6 +1121,11 @@ tbody td a:hover { color: var(--color-primary-hover); }
   line-height: var(--line-height-tight);
   margin-bottom: var(--space-4);
 }
+.hero-title i {
+    background: linear-gradient(to right top, #FFD35A, #FFA823);
+    color: transparent;
+    -webkit-background-clip: text;
+}
 .hero-subtitle {
   font-size: var(--font-size-lg);
   color: var(--color-text-secondary);
