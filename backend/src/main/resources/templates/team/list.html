@@ -4,7 +4,10 @@
 
     <div layout:fragment="content">
         <div class="container">
-            <h1 th:text="${pageTitle}">팀 목록</h1>
+            <div class="page-header page-header--flex">
+                <h1 th:text="${pageTitle}">팀 목록</h1>
+                <a th:href="@{/teams/create}" class="btn btn-primary">+ 새 팀 만들기</a>
+            </div>
 
             <div class="tabs">
                 <a th:href="@{/teams}"
@@ -15,24 +18,21 @@
                    class="tab">전체 팀 탐색</a>
             </div>
 
-            <a th:href="@{/teams/create}">새 팀 만들기</a>
-
-            <div th:if="${teams.isEmpty()}">
-                <p>팀이 없습니다.</p>
+            <div th:if="${teams.isEmpty()}" class="empty-state">
+                <p>아직 팀이 없습니다. 새 팀을 만들거나 팀에 참여해보세요!</p>
             </div>
 
-            <div th:each="team : ${teams}">
+            <div th:each="team : ${teams}" class="team-card">
                 <h3>
                     <a th:href="@{/teams/{id}(id=${team.teamNo})}" th:text="${team.teamName}">팀 이름</a>
                 </h3>
 
                 <p th:text="${team.description}">팀 설명</p>
 
-                <div>
-                    <span th:text="${team.memberCount}">0</span>명
-
-                    팀장: <span th:text="${team.ownerName}">소유자</span> |
-                    생성일: <span th:text="${#temporals.format(team.createdAt, 'yyyy-MM-dd HH:mm')}">날짜</span>
+                <div class="team-card-meta">
+                    <span><span th:text="${team.memberCount}">0</span>명</span>
+                    <span>팀장: <span th:text="${team.ownerName}">소유자</span></span>
+                    <span>생성일: <span th:text="${#temporals.format(team.createdAt, 'yyyy-MM-dd HH:mm')}">날짜</span></span>
                 </div>
 
                 <!--<div th:if="${isAllTeamsView and !team.joined}">
@@ -69,7 +69,7 @@
             </div>
 
             <!-- 페이지 정보 -->
-            <div style="text-align: center; color: #666; margin-top: 10px;">
+            <div class="pagination-info">
                 <small>
                     전체 <span th:text="${page.totalElements}">0</span>개 중
                     <span th:text="${page.number * page.size + 1}">1</span> -

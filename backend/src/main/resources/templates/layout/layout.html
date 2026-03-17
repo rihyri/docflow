@@ -4,14 +4,17 @@
 >
 <head>
     <meta charset="UTF-8">
-    <title>Title</title>
-
-    <th:block layout:fragment="script"></th:block>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>DocFlow</title>
+    <link rel="stylesheet" th:href="@{/css/docflow.css}">
     <th:block layout:fragment="css"></th:block>
+    <th:block layout:fragment="script"></th:block>
 </head>
 <body>
     <div th:replace="fragment/header::header"></div>
-    <div layout:fragment="content"></div>
+    <main class="page-wrapper">
+        <div layout:fragment="content"></div>
+    </main>
     <div th:replace="fragment/footer::footer"></div>
 </body>
 </html>

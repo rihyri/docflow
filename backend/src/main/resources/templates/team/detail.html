@@ -8,78 +8,81 @@
             <h1 th:text="${team.teamName}">팀 이름</h1>
             <span th:text="${team.myRole}">내 역할</span>
         </div>
-    </div>
 
-    <div class="team-info">
-        <div class="info-row">
-            <strong>팀장</strong>
-            <span th:text="${team.ownerName}">소유자</span>
+        <div class="team-info">
+            <div class="info-row">
+                <strong>팀장</strong>
+                <span th:text="${team.ownerName}">소유자</span>
+            </div>
+            <div class="info-row">
+                <strong>생성일</strong>
+                <span th:text="${#temporals.format(team.createdAt, 'yyyy-MM-dd HH:mm')}">날짜</span>
+            </div>
+            <div class="info-row" th:if="${team.description != null}">
+                <strong>설명</strong>
+                <p th:text="${team.description}">팀 설명</p>
+            </div>
         </div>
-        <div class="info_row">
-            <strong>생성일:</strong>
-            <span th:text="${#temporals.format(team.createdAt, 'yyyy-MM-dd HH:mm')}">날짜</span>
-        </div>
-        <div class="info-row" th:if="${team.description != null}">
-            <strong>설명:</strong>
-            <p th:text="${team.description}">팀 설명</p>
-        </div>
-    </div>
 
-    <div>
-        <a th:href="@{/teams}">목록으로</a>
+        <div class="action-bar">
+            <a th:href="@{/teams}" class="btn btn-ghost btn-sm">← 목록으로</a>
 
-        <a th:href="@{/documents/list(teamNo=${team.teamNo})}">
-            팀 문서 관리
-        </a>
+            <a th:href="@{/documents/list(teamNo=${team.teamNo})}" class="btn btn-primary btn-sm">
+                팀 문서 관리
+            </a>
 
-        <button th:if="${team.myRole.name() == 'OWNER'}" onclick="showModifyModal()">팀정보 수정</button>
+            <button th:if="${team.myRole.name() == 'OWNER'}" onclick="showModifyModal()" class="btn btn-secondary btn-sm">팀정보 수정</button>
 
-        <button th:if="${team.myRole.name() == 'OWNER'}"
-                onclick="deleteTeam(event)">
-            팀 삭제
-        </button>
-
-        <button th:if="${team.myRole != '' && team.myRole.name() != 'OWNER'}" onclick="withdrawTeam(event)">
-            탈퇴하기
-        </button>
-    </div>
-
-    <div class="team-members">
-        <div class="section-header">
-            <h2>팀 멤버 (<span th:text="${team.members.size()}">0</span>명)</h2>
-
-            <button th:if="${team.myRole.name() == 'OWNER' or team.myRole.name() == 'ADMIN'}" onclick="showInviteModal()">
-                멤버 초대
+            <button th:if="${team.myRole.name() == 'OWNER'}"
+                    onclick="deleteTeam(event)" class="btn btn-sm team-danger">
+                팀 삭제
             </button>
 
-            <table th:if="${not #lists.isEmpty(team.members)}">
-                <thead>
-                    <tr>
-                        <th>이름</th>
-                        <th>이메일</th>
-                        <th>역할</th>
-                        <th>가입일</th>
-                        <th th:if="${team.myRole.name() == 'OWNER' or team.myRole.name() == 'ADMIN'}">관리</th>
-                    </tr>
-                </thead>
-                <tbody>
-                    <tr th:each="member : ${team.members}">
-                        <td th:text="${member.memberName}"></td>
-                        <td th:text="${member.email}"></td>
-                        <td th:text="${member.role}"></td>
-                        <td th:text="${#temporals.format(member.joinedAt, 'yyyy-MM-dd')}"></td>
-                        <td th:if="${team.myRole.name() == 'OWNER' or team.myRole.name() == 'ADMIN'}">
-                            <button th:if="${member.role.name() != 'OWNER'}"
-                                    th:onclick="'changeRole(' + ${member.memberNo} + ')'">
-                                역할 변경
-                            </button>
-                            <span th:if="${member.role.name() == 'OWNER'}" class="text-muted">관리자</span>
-                        </td>
-                    </tr>
-                </tbody>
-            </table>
+            <button th:if="${team.myRole != '' && team.myRole.name() != 'OWNER'}" onclick="withdrawTeam(event)" class="btn btn-ghost btn-sm">
+                탈퇴하기
+            </button>
+        </div>
 
-            <div th:if="${#lists.isEmpty(team.members)}">
+        <div class="team-members">
+            <div class="section-header">
+                <h2>팀 멤버 (<span th:text="${team.members.size()}">0</span>명)</h2>
+
+                <button th:if="${team.myRole.name() == 'OWNER' or team.myRole.name() == 'ADMIN'}" onclick="showInviteModal()" class="btn btn-primary btn-sm">
+                    + 멤버 초대
+                </button>
+            </div>
+
+            <div class="table-wrapper">
+                <table th:if="${not #lists.isEmpty(team.members)}">
+                    <thead>
+                        <tr>
+                            <th>이름</th>
+                            <th>이메일</th>
+                            <th>역할</th>
+                            <th>가입일</th>
+                            <th th:if="${team.myRole.name() == 'OWNER' or team.myRole.name() == 'ADMIN'}">관리</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr th:each="member : ${team.members}">
+                            <td th:text="${member.memberName}"></td>
+                            <td th:text="${member.email}"></td>
+                            <td th:text="${member.role}"></td>
+                            <td th:text="${#temporals.format(member.joinedAt, 'yyyy-MM-dd')}"></td>
+                            <td th:if="${team.myRole.name() == 'OWNER' or team.myRole.name() == 'ADMIN'}">
+                                <button th:if="${member.role.name() != 'OWNER'}"
+                                        th:onclick="'changeRole(' + ${member.memberNo} + ')'"
+                                        class="btn btn-ghost btn-sm">
+                                    역할 변경
+                                </button>
+                                <span th:if="${member.role.name() == 'OWNER'}" class="text-muted">관리자</span>
+                            </td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+
+            <div th:if="${#lists.isEmpty(team.members)}" class="empty-state" style="margin-top: var(--space-4);">
                 팀 멤버가 없습니다.
             </div>
         </div>
@@ -106,9 +109,9 @@
                     </select>
                 </div>
 
-                <div>
-                    <button type="submit">초대하기</button>
-                    <button type="button" onclick="closeInviteModal()">닫기</button>
+                <div class="modal-actions">
+                    <button type="button" onclick="closeInviteModal()" class="btn btn-ghost">닫기</button>
+                    <button type="submit" class="btn btn-primary">초대하기</button>
                 </div>
 
             </form>
@@ -129,9 +132,9 @@
                     <label>팀 정보</label>
                     <textarea th:text="${team.description}" id="description" name="description"></textarea>
                 </div>
-                <div>
-                    <button type="submit">수정하기</button>
-                    <button type="button" onclick="closeModifyModal()">닫기</button>
+                <div class="modal-actions">
+                    <button type="button" onclick="closeModifyModal()" class="btn btn-ghost">닫기</button>
+                    <button type="submit" class="btn btn-primary">수정하기</button>
                 </div>
             </form>
         </div>

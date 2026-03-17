@@ -5,60 +5,70 @@
 >
 
     <div layout:fragment="content">
-        <h1>회원가입창</h1>
+        <div class="auth-page auth-page--wide">
+            <div class="form-card" style="max-width: 600px; width: 100%;">
+                <h1 style="text-align:center; color: var(--color-primary); margin-bottom: var(--space-8); font-size: var(--font-size-2xl);">회원가입</h1>
 
-        <!-- 에러 메시지 -->
-        <div th:if="${error}" th:text="${error}"></div>
+                <!-- 에러 메시지 -->
+                <div class="alert alert-error" th:if="${error}" th:text="${error}"></div>
 
-        <!-- 성공 메시지 -->
-        <div th:if="${message}" th:text="${message}"></div>
+                <!-- 성공 메시지 -->
+                <div class="alert alert-success" th:if="${message}" th:text="${message}"></div>
 
-        <div class="join_form">
-            <form name="join_form" method="post" th:action="@{/join}" onsubmit="return validateForm()">
-                <div>
-                    <label>아이디</label>
-                    <input type="text" id="memberId" name="memberId" placeholder="아이디를 입력하세요."/>
-                    <button type="button" onclick="checkMemberId()">아이디 중복확인</button>
-                    <span id="idCheckMsg"></span>
+                <div class="join_form">
+                    <form name="join_form" method="post" th:action="@{/join}" onsubmit="return validateForm()">
+                        <div class="form-group">
+                            <label>아이디</label>
+                            <input type="text" id="memberId" name="memberId" placeholder="아이디를 입력하세요."/>
+                            <div style="display:flex; gap: var(--space-2); align-items: center; margin-top: var(--space-1);">
+                                <button type="button" onclick="checkMemberId()" class="btn btn-ghost btn-sm">아이디 중복확인</button>
+                                <span id="idCheckMsg"></span>
+                            </div>
+                        </div>
+                        <div class="form-group">
+                            <label>비밀번호</label>
+                            <input type="password" name="memberPw" id="memberPw"  placeholder="비밀번호를 입력하세요."/>
+                        </div>
+                        <div class="form-group">
+                            <label>비밀번호 확인</label>
+                            <input type="password" name="memberPwCheck" id="memberPwCheck" placeholder="비밀번호를 다시 한번 입력하세요." />
+                            <span id="pwCheckMsg"></span>
+                        </div>
+                        <div class="form-group">
+                            <label>이름</label>
+                            <input type="memberName" id="memberName" name="memberName" placeholder="이름을 입력하세요."/>
+                        </div>
+                        <div class="form-group">
+                            <label>이메일</label>
+                            <div class="email-input-group">
+                                <input type="text" id="email1" name="email1" placeholder="이메일 앞부분" />
+                                <span class="at-sign">@</span>
+                                <input type="text" id="email2" name="email2" placeholder="도메인" />
+                                <select name="email_selected" id="emailSelected" onchange="handleEmailDomainChange()">
+                                    <option value="hanmail.net">hanmail.net</option>
+                                    <option value="naver.com">naver.com</option>
+                                    <option value="daum.net">daum.net</option>
+                                    <option value="nate.com">nate.com</option>
+                                    <option value="gmail.com">gmail.com</option>
+                                    <option value="korea.com">korea.com</option>
+                                    <option value="dreamwiz.com">dreamwiz.com</option>
+                                    <option value="hotmail.com">hotmail.com</option>
+                                    <option value="yahoo.co.kr">yahoo.co.kr</option>
+                                    <option value="sportal.or.kr">sportal.or.kr</option>
+                                    <option value="" selected>직접입력</option>
+                                </select>
+                            </div>
+                            <div style="display:flex; gap: var(--space-2); align-items: center; margin-top: var(--space-1);">
+                                <button type="button" onclick="checkEmail()" class="btn btn-ghost btn-sm">이메일 중복확인</button>
+                                <span id="emailCheckMsg"></span>
+                            </div>
+                        </div>
+                        <div class="form-actions">
+                            <input type="submit" value="회원가입" class="btn btn-primary btn-lg" />
+                        </div>
+                    </form>
                 </div>
-                <div>
-                    <label>비밀번호</label>
-                    <input type="password" name="memberPw" id="memberPw"  placeholder="비밀번호를 입력하세요."/>
-                </div>
-                <div>
-                    <label>비밀번호 확인</label>
-                    <input type="password" name="memberPwCheck" id="memberPwCheck" placeholder="비밀번호를 다시 한번 입력하세요." />
-                    <span id="pwCheckMsg"></span>
-                </div>
-                <div>
-                    <label>이름</label>
-                    <input type="memberName" id="memberName" name="memberName" placeholder="이름을 입력하세요."/>
-                </div>
-                <div>
-                    <label>이메일</label>
-                    <input type="text" id="email1" name="email1" placeholder="이메일을 입력하세요." />
-                    @
-                    <input type="text" id="email2" name="email2" placeholder="이메일 도메인을 입력하세요." />
-                    <select name="email_selected" id="emailSelected" onchange="handleEmailDomainChange()">
-                        <option value="hanmail.net">hanmail.net</option>
-                        <option value="naver.com">naver.com</option>
-                        <option value="daum.net">daum.net</option>
-                        <option value="nate.com">nate.com</option>
-                        <option value="gmail.com">gmail.com</option>
-                        <option value="korea.com">korea.com</option>
-                        <option value="dreamwiz.com">dreamwiz.com</option>
-                        <option value="hotmail.com">hotmail.com</option>
-                        <option value="yahoo.co.kr">yahoo.co.kr</option>
-                        <option value="sportal.or.kr">sportal.or.kr</option>
-                        <option value="" selected>직접입력</option>
-                    </select>
-                    <button type="button" onclick="checkEmail()">이메일 중복확인</button>
-                    <span id="emailCheckMsg"></span>
-                </div>
-                <div>
-                    <input type="submit" value="회원가입" />
-                </div>
-            </form>
+            </div>
         </div>
     </div>
 

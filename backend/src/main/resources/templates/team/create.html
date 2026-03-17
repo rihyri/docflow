@@ -4,47 +4,49 @@
 
 <div layout:fragment="content">
     <div class="container">
-        <h1>새로운 팀 생성</h1>
+        <div class="page-header">
+            <h1>새로운 팀 생성</h1>
+        </div>
 
-        <!-- th:action 사용하면 CSRF 토큰이 자동으로 추가됨 -->
-        <form th:action="@{/teams/create}"
-              th:object="${teamCreateRequest}"
-              method="post">
+        <div class="form-card" style="max-width: 560px; margin: 0 auto;">
+            <!-- th:action 사용하면 CSRF 토큰이 자동으로 추가됨 -->
+            <form th:action="@{/teams/create}"
+                  th:object="${teamCreateRequest}"
+                  method="post">
 
-            <!-- 명시적 CSRF 토큰 추가 (선택사항, Thymeleaf가 자동으로 추가하지만 확실하게) -->
-
-            <div class="form-group">
-                <label>팀 이름 <span style="color: red;">*</span></label>
-                <input type="text"
-                       name="teamName"
-                       placeholder="예: 개발팀, 마케팅팀"
-                       maxlength="100"
-                       required>
-                <div class="error" th:if="${#fields.hasErrors('teamName')}"
-                     th:errors="*{teamName}" style="color: red;">
-                    팀 이름 오류
+                <div class="form-group">
+                    <label>팀 이름 <span style="color: var(--color-error);">*</span></label>
+                    <input type="text"
+                           name="teamName"
+                           placeholder="예: 개발팀, 마케팅팀"
+                           maxlength="100"
+                           required>
+                    <div class="error" th:if="${#fields.hasErrors('teamName')}"
+                         th:errors="*{teamName}">
+                        팀 이름 오류
+                    </div>
                 </div>
-            </div>
 
-            <div class="form-group">
-                <label>팀 설명</label>
-                <textarea name="description"
-                          placeholder="팀에 대한 간단한 설명을 입력해주세요. (선택사항)"
-                          id="description
+                <div class="form-group">
+                    <label>팀 설명</label>
+                    <textarea name="description"
+                              placeholder="팀에 대한 간단한 설명을 입력해주세요. (선택사항)"
+                              id="description
 "
-                          maxlength="500"></textarea>
-                <div class="error" th:if="${#fields.hasErrors('description')}"
-                     th:errors="*{description}" style="color: red;">
-                    설명 오류
+                              maxlength="500"></textarea>
+                    <div class="error" th:if="${#fields.hasErrors('description')}"
+                         th:errors="*{description}">
+                        설명 오류
+                    </div>
+                    <small>최대 500자</small>
                 </div>
-                <small>최대 500자</small>
-            </div>
 
-            <div>
-                <button type="submit">팀 만들기</button>
-                <a th:href="@{/teams}">취소</a>
-            </div>
-        </form>
+                <div class="form-actions">
+                    <a th:href="@{/teams}" class="btn btn-ghost">취소</a>
+                    <button type="submit" class="btn btn-primary">팀 만들기</button>
+                </div>
+            </form>
+        </div>
 
     </div>
 </div>

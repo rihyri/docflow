@@ -4,209 +4,210 @@
       layout:decorate="~{layout/layout}">
 
 <div layout:fragment="content">
-    <h1>문서 상세</h1>
+    <div class="container">
+        <div class="page-header">
+            <h1>문서 상세</h1>
+        </div>
 
-    <div class="document-info">
-        <table>
-            <tr>
-                <th>제목</th>
-                <td>
-                    <span id="titleText" th:text="${document.title}"></span>
-                    <input type="text"
-                           id="titleInput"
-                           th:value="${document.title}"
-                           style="display: none"
-                           maxlength="200" />
-                </td>
-            </tr>
-            <tr>
-                <th>카테고리</th>
-                <td>
-                    <span id="categoryText" th:text="${document.categoryDescription}"></span>
-                    <select id="categoryInput" style="display: none;">
-                        <option th:each="cat : ${categories}"
-                                th:value="${cat}"
-                                th:text="${cat.description}"
-                                th:selected="${cat == document.category}"></option>
-                    </select>
-                </td>
-            </tr>
-            <tr>
-                <th>파일명</th>
-                <td th:text="${document.originalFileName}"></td>
-            </tr>
-            <tr>
-                <th>파일 크기</th>
-                <td th:text="${#numbers.formatDecimal(document.fileSize / 1024, 1, 2)} + ' KB'"></td>
-            </tr>
-            <tr>
-                <th>작성자</th>
-                <td th:text="${document.uploadUserName}"></td>
-            </tr>
-            <tr>
-                <th>팀</th>
-                <td th:text="${document.teamName}"></td>
-            </tr>
-            <tr>
-                <th>상태</th>
-                <td>
-                    <span th:text="${document.statusDescription}"
-                          th:classappend="${document.status.name() == 'COMPLETED' ? 'status-completed' :
-                                             (document.status.name() == 'PROCESSING' ? 'status-processing' : 'status-failed')}">
-                    </span>
-                </td>
-            </tr>
-            <tr>
-                <th>등록일</th>
-                <td th:text="${#temporals.format(document.createdAt, 'yyyy-MM-dd HH:mm:ss')}"></td>
-            </tr>
-            <tr>
-                <th>수정일</th>
-                <td th:text="${#temporals.format(document.updatedAt, 'yyyy-MM-dd HH:mm:ss')}"></td>
-            </tr>
-        </table>
-    </div>
+        <div class="document-info">
+            <table>
+                <tr>
+                    <th>제목</th>
+                    <td>
+                        <span id="titleText" th:text="${document.title}"></span>
+                        <input type="text"
+                               id="titleInput"
+                               th:value="${document.title}"
+                               style="display: none"
+                               maxlength="200" />
+                    </td>
+                </tr>
+                <tr>
+                    <th>카테고리</th>
+                    <td>
+                        <span id="categoryText" th:text="${document.categoryDescription}"></span>
+                        <select id="categoryInput" style="display: none;">
+                            <option th:each="cat : ${categories}"
+                                    th:value="${cat}"
+                                    th:text="${cat.description}"
+                                    th:selected="${cat == document.category}"></option>
+                        </select>
+                    </td>
+                </tr>
+                <tr>
+                    <th>파일명</th>
+                    <td th:text="${document.originalFileName}"></td>
+                </tr>
+                <tr>
+                    <th>파일 크기</th>
+                    <td th:text="${#numbers.formatDecimal(document.fileSize / 1024, 1, 2)} + ' KB'"></td>
+                </tr>
+                <tr>
+                    <th>작성자</th>
+                    <td th:text="${document.uploadUserName}"></td>
+                </tr>
+                <tr>
+                    <th>팀</th>
+                    <td th:text="${document.teamName}"></td>
+                </tr>
+                <tr>
+                    <th>상태</th>
+                    <td>
+                        <span th:text="${document.statusDescription}"
+                              th:classappend="${document.status.name() == 'COMPLETED' ? 'status-completed' :
+                                                 (document.status.name() == 'PROCESSING' ? 'status-processing' : 'status-failed')}">
+                        </span>
+                    </td>
+                </tr>
+                <tr>
+                    <th>등록일</th>
+                    <td th:text="${#temporals.format(document.createdAt, 'yyyy-MM-dd HH:mm:ss')}"></td>
+                </tr>
+                <tr>
+                    <th>수정일</th>
+                    <td th:text="${#temporals.format(document.updatedAt, 'yyyy-MM-dd HH:mm:ss')}"></td>
+                </tr>
+            </table>
+        </div>
 
-    <div>
-        <button type="button" id="editBtn" onclick="toggleEdit()">
-            수정
-        </button>
-        <button type="button" id="saveBtn" onclick="saveDocument()" style="display: none;">
-            저장
-        </button>
-        <button type="button" id="cancelBtn" onclick="cancelEdit()" style="display: none;">
-            취소
-        </button>
-        <button type="button" onclick="deleteDocument()">
-            삭제
-        </button>
-        <a th:href="@{/documents/list(teamNo=${document.teamNo})}">
-            목록
-        </a>
-    </div>
-
-    <!-- AI 요약 결과 -->
-    <div th:if="${document.summaryText != null}">
-        <h2>AI 요약</h2>
-        <div>
-            <button type="button"
-                    id="resummarizeBtn"
-                    onclick="resummarize()"
-                    th:disabled="${!document.canResummarize}">
-                재요약하기
+        <div class="action-bar">
+            <button type="button" id="editBtn" onclick="toggleEdit()" class="btn btn-secondary btn-sm">
+                수정
             </button>
-            <span th:text="'(남은 횟수: ' + ${document.remainingResummaryCount} + '회)'"></span>
+            <button type="button" id="saveBtn" onclick="saveDocument()" style="display: none;" class="btn btn-primary btn-sm">
+                저장
+            </button>
+            <button type="button" id="cancelBtn" onclick="cancelEdit()" style="display: none;" class="btn btn-ghost btn-sm">
+                취소
+            </button>
+            <button type="button" onclick="deleteDocument()" class="btn btn-danger btn-sm">
+                삭제
+            </button>
+            <a th:href="@{/documents/list(teamNo=${document.teamNo})}" class="btn btn-ghost btn-sm">
+                ← 목록
+            </a>
         </div>
 
-        <div>
-            <p th:text="${document.summaryText}"></p>
-        </div>
-
-        <div th:if="${document.tags != null && !document.tags.isEmpty()}">
-            <strong>태그: </strong>
-            <span th:each="tag, iterStat : ${document.tags}">
-                <span th:text="${tag}"></span>
-                <span th:if="${!iterStat.last}">, </span>
-            </span>
-        </div>
-
-        <div>
-            AI 모델: <span th:text="${document.aiModelVersion}"></span>
-            생성일: <span th:text="${#temporals.format(document.summaryCreatedAt, 'yyyy-MM-dd HH:mm')}"></span>
-            요약 횟수: <span th:text="${document.summaryCount}"></span>
-        </div>
-
-        <!-- 관련 문서 추천 -->
-        <div th:if="${relatedDocuments != null && !relatedDocuments.isEmpty()}">
-            <h2>관련 문서 추천</h2>
-            <ul>
-                <li th:each="related : ${relatedDocuments}">
-                    <a th:href="@{/documents/{docNo}(docNo=${related.documentNo})}" th:text="${related.title}"></a>
-                    <span th:text="'[' + ${related.categoryDescription} + ']'"></span>
-                    <span th:text="'(매칭 태그: ' + ${related.matchingTagCount} + '개)'"></span>
-                </li>
-            </ul>
-        </div>
-    </div>
-
-    <!-- 요약 진행 중 -->
-    <div th:if="${document.summaryText == null && document.status.name() == 'PROCESSING'}">
-        <h2>AI 요약</h2>
-        <div>
-            <p>AI 요약을 생성중입니다. 잠시만 기다려주세요 ...</p>
-        </div>
-    </div>
-
-    <!-- 요약 실패 -->
-    <div th:if="${document.summaryText == null && document.status.name() == 'FAILED'}">
-        <h2>AI 요약</h2>
-        <div>
-            <p>AI 요약 생성에 실패했습니다.</p>
-        </div>
-    </div>
-
-    <!-- 댓글 섹션 시작 -->
-    <div class="comment-section">
-        <h2>댓글 <span id="commentCount" th:text="'(' + ${comments.size()} + ')'"></span></h2>
-
-        <div class="comment-form">
-            <div th:if="${comments.isEmpty()}"
-                 id="noCommentMessage">
-                첫 번째 댓글을 작성해보세요!
+        <!-- AI 요약 결과 -->
+        <div th:if="${document.summaryText != null}" class="ai-summary-panel">
+            <h2>✨ AI 요약</h2>
+            <div class="ai-summary-meta">
+                <button type="button"
+                        id="resummarizeBtn"
+                        onclick="resummarize()"
+                        th:disabled="${!document.canResummarize}"
+                        class="btn btn-secondary btn-sm">
+                    재요약하기
+                </button>
+                <span class="text-muted" th:text="'(남은 횟수: ' + ${document.remainingResummaryCount} + '회)'"></span>
             </div>
 
-            <!-- 댓글 목록 -->
-            <div id="commentList">
-                <div th:each="comment : ${comments}"
-                     th:id="'comment-' + ${comment.commentNo}"
-                     class="comment-item"
-                >
-                    <div th:id="'comment-view-' + ${comment.commentNo}" class="comment-view">
-                        <div>
-                            <strong th:text="${comment.memberName}"></strong>
-                            <span th:text="${#temporals.format(comment.createdAt, 'yyyy-MM-dd HH:mm')}"></span>
-                            <span th:if="${comment.updatedAt != null && comment.updatedAt != comment.createdAt}">(수정됨)</span>
+            <div class="ai-summary-body">
+                <p th:text="${document.summaryText}"></p>
+            </div>
+
+            <div th:if="${document.tags != null && !document.tags.isEmpty()}" class="ai-tags">
+                <span th:each="tag, iterStat : ${document.tags}" class="tag" th:text="${tag}"></span>
+            </div>
+
+            <div class="ai-meta-footer">
+                <span>AI 모델: <span th:text="${document.aiModelVersion}"></span></span>
+                <span>생성일: <span th:text="${#temporals.format(document.summaryCreatedAt, 'yyyy-MM-dd HH:mm')}"></span></span>
+                <span>요약 횟수: <span th:text="${document.summaryCount}"></span></span>
+            </div>
+
+            <!-- 관련 문서 추천 -->
+            <div th:if="${relatedDocuments != null && !relatedDocuments.isEmpty()}" class="related-docs">
+                <h2>관련 문서 추천</h2>
+                <ul>
+                    <li th:each="related : ${relatedDocuments}">
+                        <a th:href="@{/documents/{docNo}(docNo=${related.documentNo})}" th:text="${related.title}"></a>
+                        <span th:text="'[' + ${related.categoryDescription} + ']'"></span>
+                        <span th:text="'(매칭 태그: ' + ${related.matchingTagCount} + '개)'"></span>
+                    </li>
+                </ul>
+            </div>
+        </div>
+
+        <!-- 요약 진행 중 -->
+        <div th:if="${document.summaryText == null && document.status.name() == 'PROCESSING'}" class="ai-summary-panel">
+            <h2>✨ AI 요약</h2>
+            <div class="ai-summary-body">
+                <p>AI 요약을 생성중입니다. 잠시만 기다려주세요 ...</p>
+            </div>
+        </div>
+
+        <!-- 요약 실패 -->
+        <div th:if="${document.summaryText == null && document.status.name() == 'FAILED'}" class="ai-summary-panel">
+            <h2>✨ AI 요약</h2>
+            <div class="ai-summary-body">
+                <p>AI 요약 생성에 실패했습니다.</p>
+            </div>
+        </div>
+
+        <!-- 댓글 섹션 시작 -->
+        <div class="comment-section">
+            <h2>댓글 <span id="commentCount" th:text="'(' + ${comments.size()} + ')'"></span></h2>
+
+            <div class="comment-form">
+                <div th:if="${comments.isEmpty()}"
+                     id="noCommentMessage">
+                    첫 번째 댓글을 작성해보세요!
+                </div>
+
+                <!-- 댓글 목록 -->
+                <div id="commentList">
+                    <div th:each="comment : ${comments}"
+                         th:id="'comment-' + ${comment.commentNo}"
+                         class="comment-item"
+                    >
+                        <div th:id="'comment-view-' + ${comment.commentNo}" class="comment-view">
+                            <div>
+                                <strong th:text="${comment.memberName}"></strong>
+                                <span th:text="${#temporals.format(comment.createdAt, 'yyyy-MM-dd HH:mm')}"></span>
+                                <span th:if="${comment.updatedAt != null && comment.updatedAt != comment.createdAt}">(수정됨)</span>
+                            </div>
+
+                            <div th:text="${comment.content}"></div>
+
+                            <div th:if="${comment.isAuthor}">
+                                <button type="button"
+                                       th:onclick="'editComment(' + ${comment.commentNo} + ')'">
+                                    수정
+                                </button>
+                                <button type="button"
+                                        th:onclick="'deleteComment(' + ${comment.commentNo} + ')'">
+                                    삭제
+                                </button>
+                            </div>
                         </div>
 
-                        <div th:text="${comment.content}"></div>
-
-                        <div th:if="${comment.isAuthor}">
-                            <button type="button"
-                                   th:onclick="'editComment(' + ${comment.commentNo} + ')'">
-                                수정
-                            </button>
-                            <button type="button"
-                                    th:onclick="'deleteComment(' + ${comment.commentNo} + ')'">
-                                삭제
-                            </button>
-                        </div>
-                    </div>
-
-                    <div th:id="'comment-edit-' + ${comment.commentNo}" class="comment-edit" style="display: none;">
-                        <textarea th:id="'comment-edit-content-' + ${comment.commentNo}" th:text="${comment.content}" rows="3"></textarea>
-                        <div>
-                            <button type="button"
-                                    th:onclick="'updateComment(' + ${comment.commentNo} + ')'">
-                                저장
-                            </button>
-                            <button type="button"
-                                    th:onclick="'cancelEdit(' + ${comment.commentNo} + ')'">
-                                취소
-                            </button>
+                        <div th:id="'comment-edit-' + ${comment.commentNo}" class="comment-edit" style="display: none;">
+                            <textarea th:id="'comment-edit-content-' + ${comment.commentNo}" th:text="${comment.content}" rows="3"></textarea>
+                            <div>
+                                <button type="button"
+                                        th:onclick="'updateComment(' + ${comment.commentNo} + ')'">
+                                    저장
+                                </button>
+                                <button type="button"
+                                        th:onclick="'cancelEdit(' + ${comment.commentNo} + ')'">
+                                    취소
+                                </button>
+                            </div>
                         </div>
                     </div>
                 </div>
+
+                <!-- 댓글 작성 폼 -->
+                <textarea id="commentContent"
+                          placeholder="댓글을 입력하세요."
+                          rows="3"></textarea>
+                <button type="button"
+                        onclick="addComment()" class="btn btn-primary btn-sm" style="align-self: flex-end;">댓글 작성</button>
             </div>
 
-            <!-- 댓글 작성 폼 -->
-            <textarea id="commentContent"
-                      placeholder="댓글을 입력하세요."
-                      rows="3"></textarea>
-            <button type="button"
-                    onclick="addComment()">댓글 작성</button>
+
         </div>
-
-
     </div>
 
     <script layout:fragment="script" th:inline="javascript">
