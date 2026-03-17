@@ -1,0 +1,174 @@
+<!doctype html>
+<html xmlns:th="http://www.thymeleaf.org"
+      xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
+      layout:decorate="~{layout/layout}">
+
+<div layout:fragment="content">
+
+  <!-- ── HERO ───────────────────────────────────────── -->
+  <section class="intro-hero">
+    <div class="intro-hero-inner">
+      <div class="intro-eyebrow">
+        <i class="fa-solid fa-bolt"></i>
+        팀 문서 협업 플랫폼
+      </div>
+
+      <h1 class="intro-title">
+        팀과 함께,<br>
+        문서를 <span class="accent">스마트하게</span>
+      </h1>
+
+      <p class="intro-subtitle">
+        DocFlow는 팀 기반 문서 관리 플랫폼입니다.<br>
+        AI 요약과 태그 추천으로 지식을 빠르게 공유하고,<br>
+        댓글 피드백으로 함께 발전시켜 보세요.
+      </p>
+
+      <div class="intro-actions">
+        <a th:href="@{/team/list}" class="btn btn-primary btn-lg">
+          <i class="fa-solid fa-users"></i>
+          팀 둘러보기
+        </a>
+        <a th:href="@{/login}" class="btn btn-secondary btn-lg">
+          <i class="fa-regular fa-user"></i>
+          로그인
+        </a>
+      </div>
+    </div>
+  </section>
+
+  <!-- ── FEATURES ───────────────────────────────────── -->
+  <section class="intro-features">
+    <div class="container">
+
+      <div class="intro-section-label">
+        <h2>DocFlow로 할 수 있는 것들</h2>
+        <p>팀 협업과 문서 관리에 필요한 모든 기능을 한 곳에서</p>
+      </div>
+
+      <div class="features-grid">
+
+        <!-- 팀 찾기 -->
+        <div class="feature-card">
+          <div class="feature-icon feature-icon--blue">
+            <i class="fa-solid fa-users"></i>
+          </div>
+          <h3>팀 찾기 &amp; 가입</h3>
+          <p>
+            관심 분야의 팀을 탐색하고 가입해보세요.
+            팀마다 독립적인 문서 공간이 주어져
+            체계적인 지식 공유가 가능합니다.
+          </p>
+        </div>
+
+        <!-- 문서 관리 -->
+        <div class="feature-card">
+          <div class="feature-icon feature-icon--sky">
+            <i class="fa-solid fa-file-lines"></i>
+          </div>
+          <h3>문서 관리</h3>
+          <p>
+            팀 내 문서를 업로드하고 체계적으로 관리하세요.
+            파일 형식에 관계없이 손쉽게 등록하고
+            언제든지 열람할 수 있습니다.
+          </p>
+        </div>
+
+        <!-- AI 요약 -->
+        <div class="feature-card">
+          <div class="feature-icon feature-icon--indigo">
+            <i class="fa-solid fa-wand-magic-sparkles"></i>
+          </div>
+          <h3>AI 자동 요약</h3>
+          <p>
+            문서가 업로드될 때 AI가 핵심 내용을 자동으로 요약합니다.
+            '재요약하기' 버튼으로 월 최대 3회까지
+            최신 내용으로 갱신할 수 있습니다.
+          </p>
+        </div>
+
+        <!-- 댓글 피드백 -->
+        <div class="feature-card">
+          <div class="feature-icon feature-icon--teal">
+            <i class="fa-solid fa-comments"></i>
+          </div>
+          <h3>댓글 피드백</h3>
+          <p>
+            문서에 댓글을 달아 팀원과 의견을 나눠보세요.
+            아이디어, 수정 제안, 질문 등 활발한 소통으로
+            문서의 완성도를 높일 수 있습니다.
+          </p>
+        </div>
+
+        <!-- 태그 추천 -->
+        <div class="feature-card">
+          <div class="feature-icon feature-icon--amber">
+            <i class="fa-solid fa-tags"></i>
+          </div>
+          <h3>태그 기반 문서 추천</h3>
+          <p>
+            AI 요약 결과를 분석해 자동으로 태그를 생성합니다.
+            같은 태그를 가진 관련 문서를 추천받아
+            필요한 정보를 더 빠르게 발견하세요.
+          </p>
+        </div>
+
+      </div>
+    </div>
+  </section>
+
+  <!-- ── HOW IT WORKS ───────────────────────────────── -->
+  <section class="intro-steps">
+    <div class="container">
+
+      <div class="intro-section-label">
+        <h2>시작하는 방법</h2>
+        <p>세 단계만 거치면 바로 협업을 시작할 수 있습니다</p>
+      </div>
+
+      <div class="steps-list">
+        <div class="step-item">
+          <div class="step-num">1</div>
+          <h3>회원가입 &amp; 로그인</h3>
+          <p>간단한 정보 입력으로 계정을 만들고 DocFlow에 합류하세요.</p>
+        </div>
+        <div class="step-item">
+          <div class="step-num">2</div>
+          <h3>팀 탐색 &amp; 가입</h3>
+          <p>관심 있는 팀을 찾아 가입 신청을 보내거나 직접 팀을 만들어보세요.</p>
+        </div>
+        <div class="step-item">
+          <div class="step-num">3</div>
+          <h3>문서 업로드 &amp; 협업</h3>
+          <p>문서를 올리면 AI가 요약하고 태그를 달아줍니다. 댓글로 소통을 시작하세요.</p>
+        </div>
+      </div>
+
+    </div>
+  </section>
+
+  <!-- ── CTA ───────────────────────────────────────── -->
+  <section class="intro-cta">
+    <div class="container">
+      <div class="intro-cta-inner">
+        <h2>지금 바로 시작해보세요</h2>
+        <p>
+          팀과 함께 더 스마트하게 문서를 관리하고<br>
+          AI 기반 협업의 새로운 경험을 만나보세요.
+        </p>
+        <div class="intro-actions">
+          <a th:href="@{/join}" class="btn btn-white btn-lg">
+            <i class="fa-solid fa-arrow-right"></i>
+            무료로 시작하기
+          </a>
+          <a th:href="@{/team/list}" class="btn btn-outline-white btn-lg">
+            팀 둘러보기
+          </a>
+        </div>
+      </div>
+    </div>
+  </section>
+
+</div>
+
+</html>

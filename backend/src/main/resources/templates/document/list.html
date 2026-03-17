@@ -93,27 +93,30 @@
 
         <!-- 페이징 -->
         <div class="pagination" th:if="${page.totalPages > 0}">
-            <a th:if="${page.number > 0}"
-               th:href="@{/documents/list(teamNo=${teamNo}, page=${page.number - 1}, size=${page.size},
-                           category=${selectedCategory}, searchType=${selectedSearchType},
-                           searchKeyword=${searchKeyword}, startDate=${startDate}, endDate=${endDate})}">
+            <!-- 이전 페이지 -->
+            <a th:if="${page.hasPrevious()}"
+               th:href="@{${isAllTeamsView ? '/teams/all' : '/teams'}(page=${page.number - 1}, size=${page.size})}">
                 이전
             </a>
+            <span th:unless="${page.hasPrevious()}" class="disabled">이전</span>
 
-            <span th:each="i : ${#numbers.sequence(0, page.totalPages - 1)}">
-                <a th:href="@{/documents/list(teamNo=${teamNo}, page=${i}, size=${page.size},
-                               category=${selectedCategory}, searchType=${selectedSearchType},
-                               searchKeyword=${searchKeyword}, startDate=${startDate}, endDate=${endDate})}"
-                   th:text="${i + 1}"
-                   th:classappend="${i == page.number} ? 'active'"
-                   class="page-link"></a>
-            </span>
+            <!-- 페이지 번호 -->
+            <th:block th:each="i : ${#numbers.sequence(0, page.totalPages - 1)}">
+                <!-- 현재 페이지 기준 ±2 페이지만 표시 -->
+                <th:block th:if="${i >= page.number - 2 and i <= page.number + 2}">
+                    <span th:if="${i == page.number}" class="current" th:text="${i + 1}">1</span>
+                    <a th:unless="${i == page.number}"
+                       th:href="@{${isAllTeamsView ? '/teams/all' : '/teams'}(page=${i}, size=${page.size})}"
+                       th:text="${i + 1}">1</a>
+                </th:block>
+            </th:block>
 
-            <a th:if="${page.number < page.totalPages - 1}"
-               th:href="@{/documents/list(teamNo=${teamNo}, page=${page.number + 1}, size=${page.size},
-                           category=${selectedCategory}, searchType=${selectedSearchType},
-                           searchKeyword=${searchKeyword}, startDate=${startDate}, endDate=${endDate})}"
-               class="page-link">다음</a>
+            <!-- 다음 페이지 -->
+            <a th:if="${page.hasNext()}"
+               th:href="@{${isAllTeamsView ? '/teams/all' : '/teams'}(page=${page.number + 1}, size=${page.size})}">
+                다음
+            </a>
+            <span th:unless="${page.hasNext()}" class="disabled">다음</span>
         </div>
     </div>
 </div>

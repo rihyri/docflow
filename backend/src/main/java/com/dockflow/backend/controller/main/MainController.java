@@ -19,4 +19,9 @@ public class MainController {
 
         return "main/main";
     }
+
+    @GetMapping("/introduce")
+    public String introduce() {
+        return "main/introduce";
+    }
 }

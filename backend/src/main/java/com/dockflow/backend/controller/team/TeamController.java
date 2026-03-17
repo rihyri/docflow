@@ -57,7 +57,7 @@ public class TeamController {
 
         model.addAttribute("teams", teamPage.getContent());
         model.addAttribute("page", teamPage);
-        model.addAttribute("pageTitle", "내 팀 목록");
+        model.addAttribute("pageTitle", "가입된 팀 목록");
         model.addAttribute("isAllTeamsView", false);
 
         return "team/list";
