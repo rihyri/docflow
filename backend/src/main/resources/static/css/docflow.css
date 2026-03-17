@@ -107,7 +107,7 @@ html {
 img, video { max-width: 100%; display: block; }
 ul, ol { list-style: none; }
 table { border-collapse: collapse; width: 100%; }
-textarea { resize: vertical; }
+textarea { resize: none; }
 
 /* === Base === */
 body {
@@ -226,6 +226,11 @@ small,
   font-size: var(--font-size-sm);
   color: var(--color-text-muted);
   margin-top: auto;
+}
+
+.footer p span {
+    margin-right: 10px;
+    font-weight: bold;
 }
 
 /* === Buttons === */
@@ -599,7 +604,6 @@ tbody td a:hover { color: var(--color-primary-hover); }
   display: flex;
   border-bottom: 2px solid var(--color-border);
   margin-bottom: var(--space-6);
-  overflow-x: auto;
 }
 .tab {
   padding: var(--space-3) var(--space-6);
