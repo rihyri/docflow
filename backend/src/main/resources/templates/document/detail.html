@@ -184,8 +184,9 @@
 
                         <div th:id="'comment-edit-' + ${comment.commentNo}" class="comment-edit" style="display: none;">
                             <textarea th:id="'comment-edit-content-' + ${comment.commentNo}" th:text="${comment.content}" rows="3"></textarea>
-                            <div>
+                            <div style="margin-top: 10px;">
                                 <button type="button"
+                                        class="com-btn"
                                         th:onclick="'updateComment(' + ${comment.commentNo} + ')'">
                                     저장
                                 </button>
@@ -203,7 +204,7 @@
                           placeholder="댓글을 입력하세요."
                           rows="3"></textarea>
                 <button type="button"
-                        onclick="addComment()" class="btn btn-primary btn-sm" style="align-self: flex-end;">댓글 작성</button>
+                        onclick="addComment()" class="com-btn">댓글 작성</button>
             </div>
 
 
