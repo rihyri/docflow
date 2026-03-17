@@ -31,14 +31,13 @@
                     <label>팀 설명</label>
                     <textarea name="description"
                               placeholder="팀에 대한 간단한 설명을 입력해주세요. (선택사항)"
-                              id="description
-"
+                              id="description"
                               maxlength="500"></textarea>
                     <div class="error" th:if="${#fields.hasErrors('description')}"
                          th:errors="*{description}">
                         설명 오류
                     </div>
-                    <small>최대 500자</small>
+                    <small id="textLengthCheck">( 0 / 최대 500자 )</small>
                 </div>
 
                 <div class="form-actions">
@@ -63,6 +62,33 @@
         alert("에러: " + error);
     }
     /*]]>*/
+
+    document.addEventListener('DOMContentLoaded', function() {
+        var textarea = document.getElementById('description');
+        var lengthCheck = document.getElementById('textLengthCheck');
+
+        if (textarea && lengthCheck) {
+            function updateLength() {
+                var content = textarea.value;
+                var length = content.length;
+                lengthCheck.textContent = '( ' + length + ' / 최대 500자 )';
+
+                if (length > 500) {
+                    alert('최대 500자까지 입력 가능합니다.');
+                    textarea.value = content.substring(0, 500);
+                    lengthCheck.textContent = '( 500 / 최대 500자 )';
+                }
+            }
+
+            textarea.addEventListener('keyup', updateLength);
+            textarea.addEventListener('keydown', updateLength);
+            textarea.addEventListener('change', updateLength);
+
+            updateLength();
+        } else {
+            console.error('textarea 또는 lengthCheck 요소를 찾을 수 없습니다.');
+        }
+    });
 </script>
 
 </html>
