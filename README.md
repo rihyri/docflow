@@ -6,13 +6,13 @@
 <p>프로젝트 기간 : 2026.02.04 ~ 2026.03.17 (기능 추가중)</p>
 <p>구성원 : 이혜리</p>
 <hr />
-<h3>기획 배경</h3>
+<h2>기획 배경</h2>
 <p>AI가 다방면으로 사용되고 있는 요즈음, 팀원이 업로드하는 문서를 AI가 요약해준다면 얼마나 간편할까?</p>
 <p>다양한 문서를 AI가 요약해주면 보다 편하게 소통을 할 수 있을거라 확신하여 개발하게 되었다.</p>
 <hr />
-<h3>화면 및 기능 소개</h3>
+<h2>화면 및 기능 소개</h2>
 <hr />
-<h3>기술 스택</h3>
+<h2>기술 스택</h2>
 
 ### · Backend
 | 기술 | 버전 | 용도 |
@@ -62,5 +62,14 @@
 
 <br />
 <hr />
-<h3>ERD</h3>
+<h2>ERD</h2>
 <img width="100%" height="884" alt="Image" src="https://github.com/user-attachments/assets/3ab38c2a-9a49-47a9-b2c2-bec5df2dbc34" />
+<hr />
+<h2>API 명세</h2>
+<img width="1000" height="320" alt="Image" src="https://github.com/user-attachments/assets/128a0898-3b0e-456e-8f5c-c69de2058714" />
+<img width="1000" height="626" alt="Image" src="https://github.com/user-attachments/assets/469128ed-ccba-42da-8cfa-b42641f5071a" />
+<img width="1000" height="1136" alt="Image" src="https://github.com/user-attachments/assets/dfa40923-7442-45bd-88c5-3c5f6f6ca53e" />
+<img width="1000" height="1136" alt="Image" src="https://github.com/user-attachments/assets/01371e2a-ac02-495e-b5a9-57cf3f8250d4" />
+
+
+
