@@ -71,5 +71,11 @@
 <img width="1000" height="1136" alt="Image" src="https://github.com/user-attachments/assets/dfa40923-7442-45bd-88c5-3c5f6f6ca53e" />
 <img width="1000" height="1136" alt="Image" src="https://github.com/user-attachments/assets/01371e2a-ac02-495e-b5a9-57cf3f8250d4" />
 
+<br />
+<hr />
+<h2>팀원</h2>
 
+| 이름 | 역할 |
+|------|------|
+| 이혜리 | Backend, Frontend |
 
