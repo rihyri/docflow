@@ -14,7 +14,7 @@
 <hr />
 <h3>기술 스택</h3>
 
-### Backend
+### · Backend
 | 기술 | 버전 | 용도 |
 |------|------|------|
 | Java | 17 | 런타임 |
@@ -24,12 +24,12 @@
 | Hibernate | - | JPA 구현체 |
 | Gradle | 9.3.0 | 빌드 툴 |
 
-### Database
+### · Database
 | 기술 | 버전 | 용도 |
 |------|------|------|
 | MariaDB | 11.2 | 관계형 데이터베이스 |
 
-### Frontend
+### · Frontend
 | 기술 | 버전 | 용도 |
 |------|------|------|
 | Thymeleaf | 3.x | 서버사이드 템플릿 |
@@ -38,23 +38,29 @@
 | JavaScript | - | 클라이언트 로직 |
 | Font Awesome | 6.5.0 | 아이콘 |
 
-### AI & 문서 처리
+### · AI & 문서 처리
 | 기술 | 버전 | 용도 |
 |------|------|------|
 | Anthropic Claude API | 0.1.0 | AI 문서 요약 |
 | Apache PDFBox | 2.0.30 | PDF 텍스트 추출 |
 | Apache POI | 5.2.5 | Word/Excel 문서 처리 |
 | OkHttp3 | 4.12.0 | HTTP 클라이언트 |
+| Anthropic Claude Code | 2.1.81 | 퍼블리싱 |
 
-### 유틸리티
+### · 유틸리티
 | 기술 | 버전 | 용도 |
 |------|------|------|
 | Lombok | - | 보일러플레이트 코드 제거 |
 | Google Gson | 2.10.1 | JSON 직렬화 |
 | Spring Boot DevTools | - | 개발 편의 도구 |
 
-### 인프라
+### · 인프라
 | 기술 | 버전 | 용도 |
 |------|------|------|
 | Docker | - | 컨테이너화 |
 | Docker Compose | 3.8 | 멀티 컨테이너 오케스트레이션 |
+
+<br />
+<hr />
+<h3>ERD</h3>
+<img width="100%" height="884" alt="Image" src="https://github.com/user-attachments/assets/3ab38c2a-9a49-47a9-b2c2-bec5df2dbc34" />
