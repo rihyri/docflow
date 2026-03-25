@@ -77,7 +77,7 @@
             <button type="button" id="saveBtn" onclick="saveDocument()" style="display: none;" class="btn btn-sm btn-sm">
                 저장
             </button>
-            <button type="button" id="cancelBtn" onclick="cancelEdit()" style="display: none;" class="btn btn-ghost btn-sm">
+            <button type="button" id="cancelBtn" onclick="cancelDocumentEdit()" style="display: none;" class="btn btn-ghost btn-sm">
                 취소
             </button>
             <button type="button" onclick="deleteDocument()" class="btn btn-danger btn-sm">
@@ -233,8 +233,9 @@
             document.getElementById('cancelBtn').style.display = 'inline-block';
         }
 
-        // 수정 취소
-        function cancelEdit() {
+        // 문서 수정 취소
+        function cancelDocumentEdit() {
+
             document.getElementById('titleInput').value = originalTitle;
             document.getElementById('categoryInput').value = originalCategory;
 
