@@ -11,44 +11,101 @@
 <p>다양한 문서를 AI가 요약해주면 보다 편하게 소통을 할 수 있을거라 확신하여 개발하게 되었다.</p>
 <hr />
 <h2>화면 및 기능 소개</h2>
-<h3>메인/홈페이지 소개 화면</h3>
+
+><h3>메인/홈페이지 소개 화면</h3>
+
+<br>
+
 <img width="85%" alt="Image" src="https://github.com/user-attachments/assets/43acc6ff-beb5-4f84-9fa4-3968d9a7f9d5" />
 <img width="85%" alt="Image" src="https://github.com/user-attachments/assets/44d1b086-b26a-4782-854f-9d7726977e0c" />
-<h3>회원가입/로그인 화면</h3>
-· 유저회원가입시 닉네임, 이메일 유효성 검사 실시 
+
+<br>
+<br>
+
+><h3>회원가입/로그인 화면</h3>
+· 유저회원가입시 닉네임, 이메일 유효성 검사 실시
+
+<br>
+<br>
+
 <img width="85%" alt="Image" src="https://github.com/user-attachments/assets/ec61f5bc-f953-4409-a5df-39fcaa1a2e4c" />
 <img width="85%" alt="Image" src="https://github.com/user-attachments/assets/3f851a80-a5e0-46d5-84f3-5058eb040bcb" />
-<h3>팀 목록</h3>
-· 현재 등록되어 있는 팀들, 내가 가입된 팀 확인 가능h1>DocFlow</h1>
-<p>AI 기반 문서 관리 & 팀 협업 플랫폼 Spring Boot + Thymeleaf 기반의 웹 애플리케이션으로, 팀 단위 문서 관리와 Claude AI를 활용한 자동 문서 요약 기능을 제공한다.</p>
-<hr />
-<h2>프로젝트 소개</h2>
-<p>프로젝트명 : DocFlow</p>
-<p>프로젝트 기간 : 2026.02.04 ~ 2026.03.17 (기능 추가중)</p>
-<p>구성원 : 이혜리</p>
-<hr />
-<h2>기획 배경</h2>
-<p>AI가 다방면으로 사용되고 있는 요즈음, 팀원이 업로드하는 문서를 AI가 요약해준다면 얼마나 간편할까?</p>
-<p>다양한 문서를 AI가 요약해주면 보다 편하게 소통을 할 수 있을거라 확신하여 개발하게 되었다.</p>
-<hr />
-<h2>화면 및 기능 소개</h2>
-<h3>메인/홈페이지 소개 화면</h3>
-<img width="85%" alt="Image" src="https://github.com/user-attachments/assets/43acc6ff-beb5-4f84-9fa4-3968d9a7f9d5" />
-<img width="85%" alt="Image" src="https://github.com/user-attachments/assets/44d1b086-b26a-4782-854f-9d7726977e0c" />
-<h3>회원가입/로그인 화면</h3>
-· 유저회원가입시 닉네임, 이메일 유효성 검사 실시 
-<img width="85%" alt="Image" src="https://github.com/user-attachments/assets/ec61f5bc-f953-4409-a5df-39fcaa1a2e4c" />
-<img width="85%" alt="Image" src="https://github.com/user-attachments/assets/3f851a80-a5e0-46d5-84f3-5058eb040bcb" />
-<h3>팀 목록</h3>
+
+<br>
+<br>
+
+><h3>팀 목록</h3>
 · 현재 등록되어 있는 팀들, 내가 가입된 팀 확인 가능
-<img width="85%" alt="Image" src="https://github.com/user-attachments/assets/365cd3ce-20d7-4f8f-81a5-436f992fd89d" />
-<h3>팀 상세페이지/팀 정보 수정/팀원 초대하기</h3>
-<img width="85%" alt="Image" src="https://github.com/user-attachments/assets/a0d5b245-dea7-4a8f-bab2-b7181ac6c81f" />
-<img width="85%" alt="Image" src="https://github.com/user-attachments/assets/318df6a4-87ec-4ac7-a061-f64fb9275200" />
-<img width="85%" alt="Image" src="https://github.com/user-attachments/assets/9ce5874f-b22a-443a-b29c-e78844d59fac" />
 
+<br>
+<br>
+
+<img width="85%" alt="Image" src="https://github.com/user-attachments/assets/365cd3ce-20d7-4f8f-81a5-436f992fd89d" />
+
+<br>
+<br>
+
+><h3>팀 상세페이지/팀 정보 수정/팀원 초대하기</h3>
+· 리스트에서 팀을 클릭하면 팀 상세페이지로 이동, 팀원들과 팀원의 역할 확인 가능
+· ADMIN의 경우 팀 정보 수정 가능
+· ADMIN의 경우 팀 멤버 초대 가능
+
+<br>
+<br>
+
+<img width="85%" alt="Image" src="https://github.com/user-attachments/assets/a0d5b245-dea7-4a8f-bab2-b7181ac6c81f" />
+<img width="60%" alt="Image" src="https://github.com/user-attachments/assets/318df6a4-87ec-4ac7-a061-f64fb9275200" />
+<img width="60%" alt="Image" src="https://github.com/user-attachments/assets/9ce5874f-b22a-443a-b29c-e78844d59fac" />
+
+<br>
+<br>
+
+><h3>문서 리스트</h3>
+· 각 팀에서 올린 문서 리스트 목록
+
+<br>
+<br>
+
+<img width="85%" alt="Image" src="https://github.com/user-attachments/assets/2180ab5e-b303-4603-bacb-451ea8ac6388" />
+
+<br>
+<br>
+
+><h3>문서 업로드</h3>
+· 팀 문서 정보와 파일 업로드
+
+<br>
+<br>
+
+<img width="85%" alt="Image" src="https://github.com/user-attachments/assets/54b9c6d8-d966-44a9-aa1d-2c89e5c5ef16" />
+
+<br>
+<br>
+
+><h3>문서 상세보기</h3>
+· 문서 상세보기 페이지 
+· 문서 수정, 삭제, 댓글 기능 
+· AI가 요약해준 요약문, AI가 생성해준 태그 확인 가능
+
+<br>
+<br>
+
+<img width="85%" alt="Image" src="https://github.com/user-attachments/assets/75a0c762-0a6e-4803-89c3-7c1bcc407587" />
+
+<br>
+<br>
+
+><h3>댓글 목록/댓글 수정</h3>
+· 문서 상세 페이지에서 댓글 목록, 댓글 수정, 삭제 기능
+
+<br>
+<br>
+
+<img width="70%" src="https://github.com/user-attachments/assets/346d03e4-9e7d-45e3-a35c-604451c6dfb5" />
+<img width="70%" alt="Image" src="https://github.com/user-attachments/assets/ddbb7ee8-a5e1-4afd-8b9a-ebd142d5f7e5" />
 
 <hr />
+
 <h2>기술 스택</h2>
 
 ### · Backend
