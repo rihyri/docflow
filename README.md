@@ -1,6 +1,6 @@
 <h1>DocFlow 🤖</h1>
-<p>AI 기반 문서 관리 & 팀 협업 플랫폼.</p> 
-<p>Spring Boot + Thymeleaf 기반의 웹 애플리케이션으로, 팀 단위 문서 관리와 Claude AI를 활용한 자동 문서 요약 기능을 제공한다.</p>
+<p><b>AI 기반 문서 관리 & 팀 협업 플랫폼.</b></p> 
+<p><b>Spring Boot + Thymeleaf 기반의 웹 애플리케이션</b>으로, 팀 단위 문서 관리와 Claude AI를 활용한 <b>자동 문서 요약 기능</b>을 제공한다.</p>
 <hr />
 
 <h2>✨ 프로젝트 소개</h2>
